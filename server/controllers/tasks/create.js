@@ -1,4 +1,4 @@
-const { decodedToken } = require("../../core/functions");
+const { decodeToken } = require("../../core/functions");
 const Tasks = require("../../model/tasks");
 const Team = require("../../model/team");
 
@@ -7,17 +7,17 @@ const createTask = async (req, res) => {
     try {
         const token = req.cookies.jwt;
 
-        if(!token) throw new Error("can not catch any token");
-
-        const tokenDecoded = await decodedToken(token);
+        const decodedToken = await decodeToken(token);
         
-        if(!tokenDecoded || tokenDecoded.post !== "admin") throw new Error("can not found admin id");
+        const team = await Team.findOne({name: decodedToken.team});
 
-        const team = await Team.findOne({adminId: tokenDecoded.id});
-        const newTask = new Tasks({title, description, dateStart, deadline, teamId: team._id, adminId: tokenDecoded.id});
+        const newTask = new Tasks({title, description, dateStart, deadline, teamId: team._id, adminId: decodedToken.id});
+        
         team.tasks.push(newTask._id);
+        
         await newTask.save();
         await team.save();
+        
         res.status(201).json(newTask)
 
     } catch (error) {

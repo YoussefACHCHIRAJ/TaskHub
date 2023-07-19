@@ -1,6 +1,4 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
 const tasksRouter = require('./core/routes/tasks.js');
 const authRouter = require('./core/routes/auth.js');
 const memberRouter = require('./core/routes/member.js');
@@ -17,14 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.set('view engine' , 'ejs')
 
-dotenv.config();
-const DB_URI = process.env.DB_URI;
-const PORT = process.env.PORT;
 
-/* data base connect */
-
-mongoose.connect(DB_URI , { useNewUrlParser: true, useUnifiedTopology: true})
-.then(res => app.listen(PORT)).catch(err => console.log(err.message));
 
 /* ROUTES */
 app.get("*", checkMember);
@@ -44,3 +35,5 @@ app.get("/about",authorization.logedAuth,(req,res) => {
 app.use((req,res)=>{
     res.status(404).render('404');
 });
+
+module.exports = app;

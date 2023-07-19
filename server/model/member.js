@@ -5,7 +5,8 @@ const bcrypt = require('bcrypt');
 const memberSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, "Pleaze provide a name for the member"],
+        required: [true, "The name is required"],
+        trim: [true, "Provide a valid name"]
     },
     email: {
         type: String,
@@ -15,7 +16,7 @@ const memberSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "Pleaze provide a password for the member"],
-        trim: true,
+        trim: [true,"Provide a valid password"],
         minLength: [7, "Minimum length for the password is 7"]
     },
     post: {
@@ -24,7 +25,6 @@ const memberSchema = new mongoose.Schema({
     },
     team: {
         type: String,
-        required: [true, "Pleaze provide a team for the member"],
     },
     tasks: {
         type: Array,

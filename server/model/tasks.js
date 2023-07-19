@@ -4,23 +4,21 @@ const Schema = mongoose.Schema;
 const TasksSchema = new Schema({
     title:{
         type: String,
-        required: true,
-        trim: true,
-        minLength: 3
+        required: [true,'The title is required'],
+        trim: [true,"Provide a valid title"],
     },
     description:{
         type: String,
-        required: true,
-        trim: true,
-        minLength: 3
+        required: [true,'The description is required'],
+        trim: [true,"provide a valid description"],
     },
     dateStart: {
         type: Date,
-        required: true,
+        required: [true,"the date start is required"]
     },
     deadline: {
         type:Date,
-        required: true
+        required: [true,"the deadline is required"]
     },
     teamId:{
         type: Schema.Types.ObjectId,
