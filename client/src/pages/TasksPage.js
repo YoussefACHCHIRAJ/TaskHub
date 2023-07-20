@@ -11,6 +11,7 @@ import { Card, Container, MenuItem, Popover, Typography, Stack, Button, IconButt
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import Label from '../components/label';
+import useFetchData from 'src/hooks/useFetchData';
 
 const setColor = status => {
 
@@ -44,6 +45,10 @@ export default function TaskPage() {
   const handleCloseMenu = () => {
     setOpen(null);
   };
+
+  React.useEffect(() => {
+    useFetchData("localhost:8080/tasks");
+  },[])
 
   return (
     <>

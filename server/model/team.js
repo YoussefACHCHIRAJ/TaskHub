@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { decodedToken } = require('../core/functions');
 const Member = require('./member');
 const Schema = mongoose.Schema;
 
