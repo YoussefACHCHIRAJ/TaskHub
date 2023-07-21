@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require("cors");
 const tasksRouter = require('./core/routes/tasks.js');
 const authRouter = require('./core/routes/auth.js');
 const memberRouter = require('./core/routes/member.js');
@@ -14,6 +15,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors())
 app.set('view engine' , 'ejs')
 
 
