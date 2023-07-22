@@ -12,7 +12,7 @@ const logIn = async (req, res) => {
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
         
 
-        res.status(200).json({member: member._id});
+        res.status(200).json({member: member._id,token});
 
     } catch (error) {
         res.status(500).json({"error": error.message});

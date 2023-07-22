@@ -22,7 +22,7 @@ app.set('view engine' , 'ejs')
 
 /* ROUTES */
 app.get("*", checkMember);
-app.get("/",(req,res) => {
+app.get("/",authorization.logedAuth,(req,res) => {
     res.render('index')
 });
 

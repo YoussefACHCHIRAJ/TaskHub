@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const Member = require("../model/member.js");
 
 const checkMember = (req, res, next) => {
-    const token = req.cookies.jwt;
+    const token = req.headers;
     res.locals.display = false;
     if (!token) {
         res.locals.member = null;
