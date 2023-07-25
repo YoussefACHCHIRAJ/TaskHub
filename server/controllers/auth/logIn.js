@@ -1,5 +1,6 @@
 const Member = require("../../model/member.js");
 const {createToken , maxAge} = require("../../core/functions.js");
+const handleErrors = require("../../core/handleErrors.js");
 
 const logIn = async (req, res) => {
     const { email, password } = req.body;
@@ -15,7 +16,8 @@ const logIn = async (req, res) => {
         res.status(200).json({member: member._id,token});
 
     } catch (error) {
-        res.status(500).json({"error": error.message});
+        const err = handleErrors.loginErrors(error.message)
+        res.status(500).json({"error": err});
     }
 }
 

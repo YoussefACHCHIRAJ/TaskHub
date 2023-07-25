@@ -7,46 +7,49 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Card, Container, MenuItem, Popover, Typography, Stack, Button, IconButton } from '@mui/material';
-import useFetchData from '../hooks/useFetchData';
+import { Card, Container, MenuItem, Popover, Typography, Stack, Button, IconButton, Modal, Box, TextField, CircularProgress } from '@mui/material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-import Label from '../components/label';
+import { useGetTasks } from '../hooks/useGetTasks';
+import { useStoreNewTask } from '../hooks/useStoreNewTask';
+import { fDate } from '../utils/formatTime';
 
-const setColor = status => {
 
-  if (status === 'End') {
-    return 'error';
-  }
-  if (status === 'Progress') {
-    return 'success';
-  }
-  return 'info';
+
+function createData(title, start, due, responsable) {
+  return { title, start, due, responsable };
 }
-
-function createData(title, start, due, status) {
-  return { title, start, due, status };
-}
-
-const rows = [
-  createData('create database', '03/06/2023', '20/06/2023', 'To do'),
-  createData('Ice cream sandwich', '12/11/2023', '22/11/2023', 'Progress'),
-  createData('Eclair', '23/12/2023', '27/12/2023', 'To do'),
-  createData('Cupcake', '05/04/2024', '03/05/2024', 'End'),
-  createData('Gingerbread', '19/03/2024', '28/03/2024', 'Progress'),
-];
 
 export default function TaskPage() {
-  const [open, setOpen] = React.useState(null);
-  const {tasks, error, loading} = useFetchData("localhost:8080/tasks");
 
-  if(loading){
-    console.log('loading...');
+  const [open, setOpen] = React.useState(null);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [title, setTitle] = React.useState(null);
+  const [description, setDescription] = React.useState(null);
+  const [dateStart, setDateStart] = React.useState(null);
+  const [deadline, setDeadline] = React.useState(null);
+  const [titleError, setTitleError] = React.useState('');
+  const [descriptionError, setDescriptionError] = React.useState('');
+  const [startError, setStartError] = React.useState('');
+  const [dueError, setDueError] = React.useState('');
+
+  const { errors, isLoading, storeNewTask } = useStoreNewTask('http://localhost:8080/tasks/create', { title, description, dateStart, deadline });
+  const { tasks, error, isTasksLoading } = useGetTasks('http://localhost:8080/tasks/');
+  React.useEffect(() => {
+    if (errors) {
+      setTitleError(errors.title || '');
+      setDescriptionError(errors.description || '');
+      setStartError(errors.start || '');
+      setDueError(errors.due || '');
+    }
+  }, [errors]);
+
+  let rows = [];
+  if (!isTasksLoading && tasks) {
+    rows = tasks.map(task => createData(task.title, fDate(task.dateStart), fDate(task.deadline), 'Youssef'));
   }
-  if(error){
-    console.log('error: ', error);
-  }
-  console.log('tasks:', tasks);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -55,6 +58,37 @@ export default function TaskPage() {
   const handleCloseMenu = () => {
     setOpen(null);
   };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+  const handleCloseModal = () => {
+    setTitle(null);
+    setDescription(null);
+    setDateStart(null);
+    setDeadline(null);
+    setTitleError(null)
+    setDescriptionError(null)
+    setStartError(null)
+    setDueError(null)
+    setOpenModal(false);
+  };
+
+  const cancel = () => {
+
+    handleCloseModal()
+  }
+
+  console.log(errors)
+  const submitTasks = async e => {
+    e.preventDefault();
+
+    const isTaskAdd = await storeNewTask();
+    if (isTaskAdd) {
+      handleCloseModal();
+      window.location.reload();
+    }
+  }
 
 
   return (
@@ -67,58 +101,124 @@ export default function TaskPage() {
           <Typography variant="h4" gutterBottom>
             Tasks
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
             New Task
           </Button>
         </Stack>
 
-        <Card>
-          <Scrollbar>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Task title</TableCell>
-                    <TableCell align="center">Start</TableCell>
-                    <TableCell align="center">Due</TableCell>
-                    <TableCell align="center">Status</TableCell>
-                    <TableCell align="center"> </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+        <Modal open={openModal} onClose={handleCloseModal}>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
+            <Typography variant='h4' gutterBottom >Add New task</Typography>
+            <Box component='form'>
+              <Stack spacing={2}>
+                <TextField
+                  onChange={e => setTitle(e.target.value)}
+                  helperText={titleError}
+                  id="outlined-basic"
+                  label="Task title"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  FormHelperTextProps={{
+                    style: {
+                      color: '#f44336',
+                    },
+                  }}
+                />
+                <TextField
+                  onChange={e => setDescription(e.target.value)}
+                  helperText={descriptionError}
+                  id="outlined-multiline-flexible"
+                  label="task description"
+                  maxRows={4}
+                  multiline
+                  fullWidth
+                  required
+                  FormHelperTextProps={{
+                    style: {
+                      color: '#f44336',
+                    },
+                  }}
+                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Stack direction={{ sx: 'column', sm: 'row' }} gap={2}>
+                    <div>
+                      <DatePicker
+                        onChange={date => setDateStart(date)}
+                        label='date start'
+                      />
+                      {startError && <Typography variant="body2" fontSize={12} paddingLeft={2} color="error">{startError}</Typography>}
+                    </div>
+                    <div>
+                      <DatePicker
+                        onChange={date => setDeadline(date)}
+                        label='deadline'
+                      />
+                      {dueError && <Typography variant="body2" fontSize={12} paddingLeft={2} color="error">{dueError}</Typography>}
+                    </div>
+                  </Stack>
+                </LocalizationProvider>
+                <Button disabled={isLoading} variant="contained" onClick={submitTasks}>Add this task</Button>
+                <Button onClick={cancel}>Cancel</Button>
+              </Stack>
+            </Box>
+          </Box>
+        </Modal>
 
-                  {rows.map((row) => (
 
-                    <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+        {isTasksLoading ? <CircularProgress sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}} disableShrink /> :
+          <Card>
+            {error && <Typography variant='body2'>{error}</Typography>}
+            <Scrollbar>
 
-                      <TableCell component="th" scope="row">
-                        {row.title}
-                      </TableCell>
-
-                      <TableCell align="center">{row.start}</TableCell>
-
-                      <TableCell align="center">{row.due}</TableCell>
-
-                      <TableCell align="center">
-                        <Label color={setColor(row.status)}>{row.status}</Label>
-                      </TableCell>
-
-
-                      <TableCell align="center">
-                        <IconButton size="md" color="inherit" onClick={handleOpenMenu}>
-                          <Iconify icon={'eva:more-vertical-fill'} />
-                        </IconButton>
-                      </TableCell>
-
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Task title</TableCell>
+                      <TableCell align="center">Start</TableCell>
+                      <TableCell align="center">Due</TableCell>
+                      <TableCell align="center">Status</TableCell>
+                      <TableCell align="center"> </TableCell>
                     </TableRow>
+                  </TableHead>
 
-                  ))}
 
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Scrollbar>
-        </Card>
+                  <TableBody>
+                    {rows.map((row, i) => (
+
+                      <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+
+                        <TableCell component="th" scope="row">
+                          {row.title}
+                        </TableCell>
+
+                        <TableCell align="center">{row.start}</TableCell>
+
+                        <TableCell align="center">{row.due}</TableCell>
+
+                        <TableCell align="center">
+                          {row.responsable}
+                        </TableCell>
+
+
+                        <TableCell align="center">
+                          <IconButton size="md" color="inherit" onClick={handleOpenMenu}>
+                            <Iconify icon={'eva:more-vertical-fill'} />
+                          </IconButton>
+                        </TableCell>
+
+                      </TableRow>
+
+                    ))}
+                  </TableBody>
+
+                </Table>
+              </TableContainer>
+
+            </Scrollbar>
+          </Card>
+        }
       </Container>
       <Popover
         open={Boolean(open)}

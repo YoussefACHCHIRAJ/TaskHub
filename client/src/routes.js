@@ -10,7 +10,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import TasksPage from './pages/TasksPage';
 import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
-import ProtectedRouter from './utils/ProtectedRouter';
+import ProtectedRouter, { ProtectLoginPage } from './utils/ProtectedRouter';
 
 // ----------------------------------------------------------------------
 
@@ -21,20 +21,20 @@ export default function Router() {
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: 'app', element: <ProtectedRouter element={<DashboardAppPage/>}  /> },
-        { path: 'members', element: <ProtectedRouter element={<MembersPage/>} />   },
-        { path: 'tasks', element: <ProtectedRouter element={<TasksPage/>} />   },
-        { path: 'team', element: <ProtectedRouter element={<TeamPage/>} />   },
-        { path: 'profile', element: <ProtectedRouter element={<ProfilePage/>} />   },
+        { path: 'app', element: <ProtectedRouter element={<DashboardAppPage />} /> },
+        { path: 'members', element: <ProtectedRouter element={<MembersPage />} /> },
+        { path: 'tasks', element: <ProtectedRouter element={<TasksPage />} /> },
+        { path: 'team', element: <ProtectedRouter element={<TeamPage />} /> },
+        { path: 'profile', element: <ProtectedRouter element={<ProfilePage />} /> },
       ],
     },
     {
       path: 'login',
-      element: <LoginPage />,
+      element: <ProtectLoginPage element={<LoginPage />} />,
     },
     {
       path: 'profile',
-      element: <ProfilePage />,
+      element: <ProtectedRouter element={<ProfilePage />} />,
     },
     {
       element: <SimpleLayout />,

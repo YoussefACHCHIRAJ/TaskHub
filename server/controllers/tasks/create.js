@@ -1,11 +1,16 @@
 const { decodeToken } = require("../../core/functions");
+const handleErrors = require("../../core/handleErrors");
 const Tasks = require("../../model/tasks");
 const Team = require("../../model/team");
 
 const createTask = async (req, res) => {
     const {title, description, dateStart, deadline} = req.body;
     try {
-        const token = req.cookies.jwt;
+        const {authorization} = req.headers;
+
+        if(!authorization) throw new Error('authorization is required');
+
+        const token = authorization.split(' ')[1];
 
         const decodedToken = await decodeToken(token);
         
@@ -21,7 +26,9 @@ const createTask = async (req, res) => {
         res.status(201).json(newTask)
 
     } catch (error) {
-        res.status(500).json({error: error.message});
+        const errors = handleErrors.tasksErrors(error.message);
+        console.log(errors);
+        res.status(500).json({error: errors});
     }
 }
 

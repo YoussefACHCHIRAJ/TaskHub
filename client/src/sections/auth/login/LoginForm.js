@@ -14,7 +14,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const { login, error, isLoading } = useLogin()
+  const { login, error, isLoading } = useLogin();
 
 
   const handleSubmit = async e => {
@@ -52,7 +52,7 @@ export default function LoginForm() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" disabled={isLoading} onClick={handleSubmit}>
         Login
       </LoadingButton>
       {error && (<div>{error}</div>)}

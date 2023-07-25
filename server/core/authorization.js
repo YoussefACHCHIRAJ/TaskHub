@@ -31,13 +31,15 @@ class authorization {
         });
     };
     static adminAuth(req, res, next) {
-        const token = req.cookies.jwt;
+        const {authorization} = req.headers;
         
-        if (!token) return res.redirect("/auth/login");
+        if (!authorization) return res.status(401).json({error: 'authorization token required.'})
+        
+        const token = authorization.split(' ')[1];
         
         jwt.verify(token, process.env.secret_Key, async function (error, decoded) {
             if (error) {
-                return res.redirect("/auth/login");
+                return res.json({error: 'forbidden'});
             };
             if (decoded.post !== 'admin') return res.redirect("/");
             next();

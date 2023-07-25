@@ -12,6 +12,7 @@ import { useLogout } from '../../../hooks/useLogout';
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const {logout} = useLogout();
+  
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
@@ -22,7 +23,6 @@ export default function AccountPopover() {
 
   const logedout = () =>{
     logout();
-    handleClose();
   }
   
 
@@ -87,7 +87,7 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         
-        <MenuItem onClick={logedout} sx={{ m: 1 }} component={Link} to='/logout'>
+        <MenuItem onClick={logedout} sx={{ m: 1 }} component={Link} to='/login'>
           Logout
         </MenuItem>
       </Popover>

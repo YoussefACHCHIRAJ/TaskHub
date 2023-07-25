@@ -4,8 +4,11 @@ const Team = require("../../model/team");
 
 const tasks = async (req, res) => {
     try {
-        const token = req.cookies.jwt;
+        const {authorization} = req.headers;
 
+        if(!authorization) return res.status(401).json({error: 'authorization token required.'})
+
+        const token = authorization.split(' ')[1];
         const decodedToken = await decodeToken(token);
 
         const team = await Team.findOne({ name: decodedToken.team });
@@ -14,7 +17,7 @@ const tasks = async (req, res) => {
 
         const tasks = await Tasks.find({ teamId: team._id });
         
-        res.status(200).render("./tasks", { tasks });
+        res.status(200).json({ tasks });
 
     } catch (error) {
         res.status(500).json({ error: error.message });

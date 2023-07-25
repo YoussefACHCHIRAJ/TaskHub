@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAuthContext from "./useAuthContext";
+
 
 export const useLogin = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(null);
-    const {dispatch} = useAuthContext()
+    const { dispatch } = useAuthContext();
+    const navigate = useNavigate();
+
 
     const login = async (endpoint, dataObject) => {
         setIsLoading(true);
@@ -18,19 +22,23 @@ export const useLogin = () => {
             })
             const result = await response.json();
 
-            if (!response.ok) {
+            if (result.error) {
                 setIsLoading(false);
                 setError(result.error);
             }
             if (response.ok) {
                 localStorage.setItem('user', JSON.stringify(result));
-                dispatch({type:'login', payload:result});
+                setIsLoading(false);
+                setError(false);
+                dispatch({ type: 'login', payload: result });
+                navigate('/dashboard/app');
+
             }
         } catch (error) {
             setIsLoading(false);
             setError(error);
         }
     }
-    return {login, error, isLoading};
+    return { login, error, isLoading };
 }
 
