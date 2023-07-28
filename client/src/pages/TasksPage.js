@@ -1,42 +1,110 @@
 import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Card, Container, MenuItem, Popover, Typography, Stack, Button, IconButton, Modal, Box, TextField, CircularProgress } from '@mui/material';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Card,
+  Container,
+  MenuItem,
+  Popover,
+  Typography,
+  Stack,
+  Button,
+  Modal,
+  Box,
+  TextField,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Snackbar,
+  Alert,
+  AlertTitle,
+  Select,
+  InputLabel,
+  FormControl,
+  OutlinedInput,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import {
+  DatePicker,
+  LocalizationProvider
+} from '@mui/x-date-pickers';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import Iconify from '../components/iconify';
-import Scrollbar from '../components/scrollbar';
 import { useGetTasks } from '../hooks/useGetTasks';
 import { useStoreNewTask } from '../hooks/useStoreNewTask';
+import { useDeleteTask } from '../hooks/useDeleteTask';
 import { fDate } from '../utils/formatTime';
 
+import Scrollbar from '../components/scrollbar';
+import Row from '../components/row/row';
 
+import Iconify from '../components/iconify';
 
-function createData(title, start, due, responsable) {
-  return { title, start, due, responsable };
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function createData(id, title, start, due, description, responsables) {
+  return {
+    id,
+    title,
+    start,
+    due,
+    description,
+    responsables,
+  };
+}
+function getStyles(member, responsables, theme) {
+  return {
+    fontWeight:
+      responsables.indexOf(member) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
 }
 
 export default function TaskPage() {
-
-  const [open, setOpen] = React.useState(null);
-  const [openModal, setOpenModal] = React.useState(false);
+  const theme = useTheme();
   const [title, setTitle] = React.useState(null);
   const [description, setDescription] = React.useState(null);
   const [dateStart, setDateStart] = React.useState(null);
   const [deadline, setDeadline] = React.useState(null);
+
   const [titleError, setTitleError] = React.useState('');
   const [descriptionError, setDescriptionError] = React.useState('');
   const [startError, setStartError] = React.useState('');
   const [dueError, setDueError] = React.useState('');
 
-  const { errors, isLoading, storeNewTask } = useStoreNewTask('http://localhost:8080/tasks/create', { title, description, dateStart, deadline });
-  const { tasks, error, isTasksLoading } = useGetTasks('http://localhost:8080/tasks/');
+  const [responsables, setResponsables] = React.useState([]);
+  const [taskSelected, setTaskSelected] = React.useState(null);
+
+  const { errors, isLoading, storeNewTask } = useStoreNewTask('http://localhost:8080/tasks/create',
+    { title, description, dateStart, deadline, responsables });
+  const { tasks, teamMembers, error, isTasksLoading } = useGetTasks('http://localhost:8080/tasks/');
+  const { deleteError, deleteIsLoading, deleteTask } = useDeleteTask(`http://localhost:8080/tasks/delete/${taskSelected}`);
+
+  const [open, setOpen] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
+
   React.useEffect(() => {
     if (errors) {
       setTitleError(errors.title || '');
@@ -47,26 +115,28 @@ export default function TaskPage() {
   }, [errors]);
 
   let rows = [];
+  let members = [];
   if (!isTasksLoading && tasks) {
-    rows = tasks.map(task => createData(task.title, fDate(task.dateStart), fDate(task.deadline), 'Youssef'));
+    rows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables));
+    members = teamMembers.map(member => ({ id: member._id, name: member.name }));
   }
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event, taskId) => {
+    setTaskSelected(taskId);
     setOpen(event.currentTarget);
   };
-
   const handleCloseMenu = () => {
     setOpen(null);
+    setTaskSelected(null);
   };
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
   const handleCloseModal = () => {
     setTitle(null);
     setDescription(null);
     setDateStart(null);
     setDeadline(null);
+    setResponsables([]);
+
     setTitleError(null)
     setDescriptionError(null)
     setStartError(null)
@@ -74,19 +144,41 @@ export default function TaskPage() {
     setOpenModal(false);
   };
 
-  const cancel = () => {
+  const handleChangeResponsables = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setResponsables(typeof value === 'string' ? value.split(',') : value,);
+  };
 
-    handleCloseModal()
-  }
-
-  console.log(errors)
   const submitTasks = async e => {
     e.preventDefault();
 
     const isTaskAdd = await storeNewTask();
+
     if (isTaskAdd) {
       handleCloseModal();
-      window.location.reload();
+      if (!isTasksLoading) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    }
+  }
+
+  const submitDeleteTask = async () => {
+    const isTaskDeleted = await deleteTask();
+    if (isTaskDeleted) {
+      setOpenSnackbar(true);
+      setDeleteConfirmationOpen(false);
+      if (!deleteIsLoading) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+
+    } else {
+      console.log(deleteError);
     }
   }
 
@@ -101,7 +193,7 @@ export default function TaskPage() {
           <Typography variant="h4" gutterBottom>
             Tasks
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
             New Task
           </Button>
         </Stack>
@@ -158,66 +250,71 @@ export default function TaskPage() {
                     </div>
                   </Stack>
                 </LocalizationProvider>
+
+                <FormControl sx={{ m: 1, width: '100%' }}>
+                  <InputLabel id="demo-multiple-name-label">Responsables</InputLabel>
+                  <Select
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={responsables}
+                    onChange={handleChangeResponsables}
+                    input={<OutlinedInput label="Name" />}
+                    MenuProps={MenuProps}
+                  >
+                    {members.map((member) => (
+                      <MenuItem
+                        key={member.id}
+                        value={member.name}
+                        style={getStyles(member, responsables, theme)}
+                      >
+                        {member.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
                 <Button disabled={isLoading} variant="contained" onClick={submitTasks}>Add this task</Button>
-                <Button onClick={cancel}>Cancel</Button>
+                <Button onClick={handleCloseModal}>Cancel</Button>
               </Stack>
             </Box>
           </Box>
         </Modal>
 
 
-        {isTasksLoading ? <CircularProgress sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}} disableShrink /> :
-          <Card>
-            {error && <Typography variant='body2'>{error}</Typography>}
-            <Scrollbar>
+        {isTasksLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
+          rows.length === 0 ?
+            <Alert severity="info">
+              <AlertTitle>info</AlertTitle>
+              There is no Tasks
+            </Alert>
+            :
+            <Card>
+              {error && <Typography variant='body2'>{error}</Typography>}
+              <Scrollbar>
 
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Task title</TableCell>
-                      <TableCell align="center">Start</TableCell>
-                      <TableCell align="center">Due</TableCell>
-                      <TableCell align="center">Status</TableCell>
-                      <TableCell align="center"> </TableCell>
-                    </TableRow>
-                  </TableHead>
-
-
-                  <TableBody>
-                    {rows.map((row, i) => (
-
-                      <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-
-                        <TableCell component="th" scope="row">
-                          {row.title}
-                        </TableCell>
-
-                        <TableCell align="center">{row.start}</TableCell>
-
-                        <TableCell align="center">{row.due}</TableCell>
-
-                        <TableCell align="center">
-                          {row.responsable}
-                        </TableCell>
-
-
-                        <TableCell align="center">
-                          <IconButton size="md" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
-
+                <TableContainer component={Paper}>
+                  <Table aria-label="collapsible table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell />
+                        <TableCell>Task title</TableCell>
+                        <TableCell align="center">Start</TableCell>
+                        <TableCell align="center">Due</TableCell>
+                        <TableCell align="center"> </TableCell>
                       </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <Row key={row.id} row={row} handleOpenMenu={handleOpenMenu} />
+                      ))
+                      }
+                    </TableBody>
+                  </Table>
+                </TableContainer>
 
-                    ))}
-                  </TableBody>
-
-                </Table>
-              </TableContainer>
-
-            </Scrollbar>
-          </Card>
+              </Scrollbar>
+            </Card>
         }
       </Container>
       <Popover
@@ -238,16 +335,35 @@ export default function TaskPage() {
           },
         }}
       >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
+        <MenuItem sx={{ color: 'error.main' }} onClick={() => setDeleteConfirmationOpen(true)} >
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
+          Delete task
         </MenuItem>
       </Popover>
+
+
+      <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>
+        <DialogTitle>Delete Task</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this task?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmationOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button disabled={deleteIsLoading} onClick={submitDeleteTask} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+
+      </Dialog>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+          This deleted
+        </Alert>
+      </Snackbar>
     </>
   );
 }

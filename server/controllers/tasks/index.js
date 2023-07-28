@@ -9,6 +9,7 @@ const tasks = async (req, res) => {
         if(!authorization) return res.status(401).json({error: 'authorization token required.'})
 
         const token = authorization.split(' ')[1];
+        
         const decodedToken = await decodeToken(token);
 
         const team = await Team.findOne({ name: decodedToken.team });
@@ -17,7 +18,9 @@ const tasks = async (req, res) => {
 
         const tasks = await Tasks.find({ teamId: team._id });
         
-        res.status(200).json({ tasks });
+        const teamMembers = await Team.getMembers(team);
+
+        res.status(200).json({ tasks, teamMembers });
 
     } catch (error) {
         res.status(500).json({ error: error.message });

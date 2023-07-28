@@ -23,20 +23,22 @@ export const useLogin = () => {
             const result = await response.json();
 
             if (result.error) {
-                setIsLoading(false);
                 setError(result.error);
-            }
-            if (response.ok) {
-                localStorage.setItem('user', JSON.stringify(result));
                 setIsLoading(false);
-                setError(false);
-                dispatch({ type: 'login', payload: result });
-                navigate('/dashboard/app');
-
+                return false;
             }
-        } catch (error) {
+
+            localStorage.setItem('user', JSON.stringify(result));
+            setError(false);
+            dispatch({ type: 'login', payload: result });
             setIsLoading(false);
+            navigate('/dashboard/app');
+            return true;
+
+        } catch (error) {
             setError(error);
+            setIsLoading(false);
+            return false;
         }
     }
     return { login, error, isLoading };

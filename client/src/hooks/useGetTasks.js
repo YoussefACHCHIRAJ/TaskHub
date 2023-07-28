@@ -6,6 +6,7 @@ export const useGetTasks = (endpoint) => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(null);
     const [tasks, setTasks] = useState(null);
+    const [teamMembers, setTeamMembers] = useState(null);
     const { user } = useAuthContext()
 
     useEffect(() => {
@@ -26,7 +27,8 @@ export const useGetTasks = (endpoint) => {
                 if (response.ok) {
                     setIsLoading(false);
                     setError(false);
-                    setTasks(result.tasks)
+                    setTasks(result.tasks);
+                    setTeamMembers(result.teamMembers);
 
                 }
             } catch (error) {
@@ -36,6 +38,6 @@ export const useGetTasks = (endpoint) => {
         }
         getTasks();
     }, [endpoint, user.token])
-    return { tasks, error, isTasksLoading:isLoading };
+    return { tasks, teamMembers, error, isTasksLoading:isLoading };
 }
 

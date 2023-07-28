@@ -8,7 +8,6 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import DashboardAppPage from './pages/DashboardAppPage';
 import TasksPage from './pages/TasksPage';
-import TeamPage from './pages/TeamPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRouter, { ProtectLoginPage } from './utils/ProtectedRouter';
 
@@ -24,13 +23,12 @@ export default function Router() {
         { path: 'app', element: <ProtectedRouter element={<DashboardAppPage />} /> },
         { path: 'members', element: <ProtectedRouter element={<MembersPage />} /> },
         { path: 'tasks', element: <ProtectedRouter element={<TasksPage />} /> },
-        { path: 'team', element: <ProtectedRouter element={<TeamPage />} /> },
         { path: 'profile', element: <ProtectedRouter element={<ProfilePage />} /> },
       ],
     },
     {
-      path: 'login',
-      element: <ProtectLoginPage element={<LoginPage />} />,
+      path: '/login',
+      element: <ProtectLoginPage loginPage={<LoginPage />} />,
     },
     {
       path: 'profile',

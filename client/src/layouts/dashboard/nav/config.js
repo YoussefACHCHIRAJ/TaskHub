@@ -21,11 +21,6 @@ const navConfig = [
     path: '/dashboard/tasks',
     icon: icon('ic_tasks'),
   },
-  {
-    title: 'Team',
-    path: '/dashboard/team',
-    icon: icon('ic_team'),
-  },
 ];
 
 export default navConfig;

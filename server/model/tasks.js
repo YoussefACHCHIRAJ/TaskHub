@@ -20,6 +20,10 @@ const TasksSchema = new Schema({
         type:Date,
         required: [true,"the deadline is required"]
     },
+    responsables: {
+        type:Array,
+        required: [true, "This option is required"]
+    },
     teamId:{
         type: Schema.Types.ObjectId,
         required: true

@@ -8,6 +8,7 @@ import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
 import account from '../../../_mock/account';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
+import useAuthContext from "../../../hooks/useAuthContext";
 // components
 import Logo from '../../../components/logo';
 import Scrollbar from '../../../components/scrollbar';
@@ -36,6 +37,7 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
+  const { user } = useAuthContext();
 
   const isDesktop = useResponsive('up', 'lg');
 
@@ -64,7 +66,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
+                {user.member.name}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>

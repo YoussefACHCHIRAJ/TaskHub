@@ -7,37 +7,42 @@ import {
   Table,
   Stack,
   Paper,
-  Avatar,
   Button,
-  Popover,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
   Typography,
-  IconButton,
   TableContainer,
   TablePagination,
+  CircularProgress,
+  MenuItem,
+  InputLabel,
+  Select,
+  FormControl,
+  TextField,
+  Modal,
+  Box,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
-// components
-import Label from '../components/label';
+// hooks
+import useGetMembers from '../hooks/useGetMembers';
+import useStoreMember from '../hooks/useStoreMember';
+
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
+  { id: 'team', label: 'Team', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -72,13 +77,14 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function MembersPage() {
-  const [open, setOpen] = useState(null);
+
+  const { getMembersError, getMembersIsLoading, members } = useGetMembers('http://localhost:8080/member');
+  const { error, isLoading, storeMember } = useStoreMember('http://localhost:8080/member/create')
 
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
-  const [selected, setSelected] = useState([]);
 
   const [orderBy, setOrderBy] = useState('name');
 
@@ -86,28 +92,42 @@ export default function MembersPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
+  const [openModal, setOpenModal] = useState(false);
 
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('Frontend');
+
+  let users = []
+
+  if (!getMembersIsLoading && members) {
+    users = members.map((member) => ({
+      id: member._id,
+      name: member.name,
+      email: member.email,
+      role: member.post,
+      team: member.team,
+    }));
+  }
+
+
+  const cancel = () => {
+    setName('');
+    setEmail('');
+    setPassword('');
+    setRole('Fronend');
+    setOpenModal(false)
+  }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -118,11 +138,30 @@ export default function MembersPage() {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(users, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
+
+  const submitStoreMember = async e => {
+    e.preventDefault();
+    const isMemberSotred = await storeMember({ name, email, password, role });
+
+    if (isLoading) {
+      console.log('loding...');
+    } else {
+      console.log('loaded');
+      if (isMemberSotred) {
+        setOpenModal(false);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        console.log('error: ', error);
+      }
+    }
+  }
 
   return (
     <>
@@ -135,134 +174,171 @@ export default function MembersPage() {
           <Typography variant="h4" gutterBottom>
             Members
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
             New Member
           </Button>
         </Stack>
 
-        <Card>
-
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
+        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
+            <Typography variant='h4' gutterBottom >Add New Member</Typography>
+            <Box component='form'>
+              <Stack spacing={2}>
+                <TextField
+                  onChange={e => setName(e.target.value)}
+                  id="outlined-basic"
+                  label="Full name"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  FormHelperTextProps={{
+                    style: {
+                      color: '#f44336',
+                    },
+                  }}
                 />
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, team, company, avatarUrl, isVerified } = row;
+                <TextField
+                  onChange={e => setEmail(e.target.value)}
+                  id="outlined-multiline-flexible"
+                  label="Email"
+                  name='email'
+                  type='email'
+                  maxRows={4}
+                  multiline
+                  fullWidth
+                  required
+                  FormHelperTextProps={{
+                    style: {
+                      color: '#f44336',
+                    },
+                  }}
+                />
+                <TextField
+                  name="password"
+                  label="Password"
+                  onChange={e => setPassword(e.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                          <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <FormControl sx={{ m: 1, width: '100%' }}>
+                  <InputLabel id="demo-multiple-name-label">Role</InputLabel>
+                  <Select
+                    onChange={e => setRole(e.target.value)}
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    label='Role'
+                    value={role}
+                  >
+                    <MenuItem value='Frontend'>Front end</MenuItem>
+                    <MenuItem value='Backend'>Back end</MenuItem>
+                    <MenuItem value='Designer'>Designer</MenuItem>
+                    <MenuItem value='Devops'>Devops</MenuItem>
+                  </Select>
+                </FormControl>
 
-                    return (
-                      <TableRow hover key={id} tabIndex={-1}>
-                        
+                <Button onClick={submitStoreMember} variant="contained">Add this Member</Button>
+                <Button onClick={cancel}>Cancel</Button>
+              </Stack>
+            </Box>
+          </Box>
+        </Modal>
 
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2} sx={{paddingLeft:'4px'}}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
+        {getMembersIsLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
 
-                        <TableCell align="left">{company}</TableCell>
+          getMembersError ? 'no members' :
 
-                        <TableCell align="left">{role}</TableCell>
+            (<Card>
 
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+              <Scrollbar>
+                <TableContainer sx={{ minWidth: 800 }}>
+                  <Table>
+                    <UserListHead
+                      order={order}
+                      orderBy={orderBy}
+                      headLabel={TABLE_HEAD}
+                      rowCount={users.length}
+                      onRequestSort={handleRequestSort}
+                    />
+                    <TableBody>
+                      {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                        const { id, name, role, team, email } = row;
 
-                        <TableCell align="left">
-                          <Label color={(team !== '')? 'success' : 'error'}>{team  !== '' ? team : 'Send join request'}</Label>
-                        </TableCell>
+                        return (
+                          <TableRow hover key={id} tabIndex={-1}>
 
-                        <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
 
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            Not found
-                          </Typography>
+                            <TableCell component="th" scope="row" padding="none">
+                              <Stack direction="row" alignItems="center" spacing={2} sx={{ paddingLeft: '4px' }}>
+                                <Typography variant="subtitle2" noWrap>
+                                  {name}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
 
-                          <Typography variant="body2">
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                            <TableCell align="left">{email}</TableCell>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
+                            <TableCell align="left">{role}</TableCell>
+
+                            <TableCell align="left">{team}</TableCell>
+
+                          </TableRow>
+                        );
+                      })}
+                      {emptyRows > 0 && (
+                        <TableRow style={{ height: 53 * emptyRows }}>
+                          <TableCell colSpan={6} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+
+                    {isNotFound && (
+                      <TableBody>
+                        <TableRow>
+                          <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                            <Paper
+                              sx={{
+                                textAlign: 'center',
+                              }}
+                            >
+                              <Typography variant="h6" paragraph>
+                                Not found
+                              </Typography>
+
+                              <Typography variant="body2">
+                                No results found for &nbsp;
+                                <strong>&quot;{filterName}&quot;</strong>.
+                                <br /> Try checking for typos or using complete words.
+                              </Typography>
+                            </Paper>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    )}
+                  </Table>
+                </TableContainer>
+              </Scrollbar>
+
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={users.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Card>)
+        }
+
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }

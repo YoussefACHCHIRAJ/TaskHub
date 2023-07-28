@@ -19,7 +19,14 @@ export default function LoginForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    await login('http://localhost:8080/auth/login', { email, password });
+    const isLoged = await login('http://localhost:8080/auth/login', { email, password });
+   
+    if(isLoged) console.log('loged');
+   
+    else {
+      console.log('does not loged');
+      console.log(error)
+    }
 
   }
 

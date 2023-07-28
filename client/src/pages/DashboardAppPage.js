@@ -36,10 +36,6 @@ export default function DashboardAppPage() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Team"  color="info" total={1} icon={'ri:team-fill'} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Tasks"  color="error" total={30} icon={'fluent:tasks-app-20-filled'} />
           </Grid>
 

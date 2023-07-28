@@ -19,6 +19,6 @@ router.get("/update/:id",authorization.adminAuth,updateTask);
 router.post("/update/:id",authorization.adminAuth,storeUpdatedTask);
 
 
-router.get("/delete/:id",authorization.adminAuth,deleteTask);
+router.delete("/delete/:id",authorization.adminAuth,deleteTask);
 
 module.exports = router;

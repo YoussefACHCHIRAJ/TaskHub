@@ -1,9 +1,18 @@
+// import React from 'react'
+import useAuthContext from "../hooks/useAuthContext";
+
 // ----------------------------------------------------------------------
 
-const account = {
-  displayName: 'Jaydon Frankie',
-  email: 'demo@minimals.cc',
-  photoURL: '/assets/images/avatars/avatar_default.jpg',
-};
+const Account = () => {
+  const { user } = useAuthContext();
 
-export default account;
+  return {
+    displayName: user.member.name,
+    email: user.member.email,
+    photoURL: '',
+  };
+}
+
+export default Account
+
+

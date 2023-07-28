@@ -7,7 +7,7 @@ class handleErrors {
         if(error.includes('password')){
             return 'password incorrect.';
         }
-        return 'incorrect data';
+        return error;
     }
 
     static tasksErrors(error) {
