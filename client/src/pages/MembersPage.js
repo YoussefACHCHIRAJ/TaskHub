@@ -137,9 +137,10 @@ export default function MembersPage() {
           <Typography variant="h4" gutterBottom>
             Members
           </Typography>
-          {user.member.post.toLowerCase() === 'admin' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
-            New Member
-          </Button>)}
+          {user.member.post.toLowerCase() === 'admin' &&
+            (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
+              New Member
+            </Button>)}
         </Stack>
 
         <AddMemberModal
