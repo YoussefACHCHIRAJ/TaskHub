@@ -1,11 +1,11 @@
 const express = require('express');
-const createMember = require('../../controllers/members/createMember');
+const create = require('../../controllers/members/create');
 const getTeamMembers = require('../../controllers/members/getTeamMembers');
 
 const router = express.Router();
 
 router.get('/',getTeamMembers);
 
-router.post("/create",createMember);
+router.post("/create",create);
 
 module.exports = router;

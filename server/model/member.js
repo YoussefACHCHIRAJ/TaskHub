@@ -1,32 +1,38 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
+const { hashingPassword } = require('../core/functions');
+const validator = require("email-validator");
 
 const memberSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, "The name is required"],
+        required: [true, "Pleaze provide a valid name"],
         trim: [true, "Provide a valid name"]
     },
     email: {
         type: String,
-        required: [true, "Pleaze provide an email for the member"],
-        unique: [true, "this email already exist."],
+        required: [true, "Pleaze provide a valid email."],
+        trim: [true, "Pleaze Provide a valid password"],
+        unique: [true, "This email already exist."],
+        validate: {
+            validator: value => {
+                return validator.validate(value);
+            },
+            message: ()  => "This is not a valid email."
+        }
     },
     password: {
         type: String,
-        required: [true, "Pleaze provide a password for the member"],
-        trim: [true, "Provide a valid password"],
-        minLength: [7, "Minimum length for the password is 7"]
+        required: [true, "Pleaze provide a valid password."],
+        minLength: [7, "The minimum length for the password is 7"]
     },
     post: {
         type: String,
-        default: 'Admin'
     },
     team: {
         type: String,
         unique: true,
-        required: [true, 'Pleaze provide a team name'],
+        required: [true, 'Pleaze provide a valid team named'],
         trim: true,
         minLength: 2
     },
@@ -41,37 +47,47 @@ memberSchema.statics.login = async function (email, password) {
         let member = await this.findOne({ email });
 
         if (!member) {
-            throw new Error("email: Email does not match any account");
+            throw {
+                email: {
+                    message: 'The email Does not match any account.'
+                }
+            }
         }
 
         const auth = await bcrypt.compare(password, member.password);
         if (!auth) {
-            throw new Error("password: Email or password incorrect");
+            throw {
+                password: {
+                    message: 'Password incorrect.'
+                }
+            }
         }
         member = member.toObject();
         delete member.password;
         return member;
     } catch (error) {
-        throw new Error(`login failed: ${error.message}`);
+        throw (error);
     }
 }
 
 memberSchema.statics.create = async function ({ name, email, password, team, post = 'admin' }) {
 
     try {
-        const slate = await bcrypt.genSalt();
+        if (password.length >= 7) password = await hashingPassword(password);
 
-        if (!slate) throw new Error("can not generate a slate");
-
-        const hashPassword = await bcrypt.hash(password, slate)
-
-        if (!hashPassword) throw new Error("can not hash the password");
-
-        const newMember = new this({ name, email, password: hashPassword, post, team })
+        const newMember = new this({ name, email, password, post, team });
         await newMember.save();
+        
         return newMember;
     } catch (error) {
-        throw new Error(`create failed: ${error.message}`);
+        if (error.message.includes('email_1 dup key') && !error.errors) {
+            throw {
+                email: {
+                    message: 'The email you provided is already used.'
+                }
+            }
+        }
+        throw error.errors;
     }
 }
 

@@ -14,11 +14,11 @@ const TasksSchema = new Schema({
     },
     dateStart: {
         type: Date,
-        required: [true,"the date start is required"]
+        required: [true,"The date start is required"]
     },
     deadline: {
         type:Date,
-        required: [true,"the deadline is required"]
+        required: [true,"The deadline is required"]
     },
     responsables: {
         type:Array,

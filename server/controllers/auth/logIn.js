@@ -6,6 +6,7 @@ const logIn = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        
         const member = await Member.login(email, password);
 
         const token = createToken({ id: member._id, post: member.post, team: member.team });
@@ -13,9 +14,9 @@ const logIn = async (req, res) => {
 
         res.status(200).json({ member, token });
 
-    } catch (error) {
-        const err = HandleErrors.loginErrors(error.message)
-        res.status(500).json({ "error": err });
+    } catch (err) {
+        const error = HandleErrors.loginErrors(err)
+        res.status(500).json({error});
     }
 }
 
