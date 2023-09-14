@@ -7,7 +7,8 @@ const TeamSchema = new Schema({
     name: {
         type: String,
         required: [true,'The name is required'],
-        trim: true
+        trim: true,
+        unique: true
     },
     adminId: {
         type: Schema.Types.ObjectId,
@@ -33,7 +34,7 @@ TeamSchema.statics.addMember = async function (adminId, id) {
 
 TeamSchema.statics.getMembers = async function (team) {
     try {
-        const members = await Promise.all(team.members.map(async member => {
+        let members = await Promise.all(team.members.map(async member => {
 
             const memberData = await Member.findById(member);
 
@@ -42,6 +43,10 @@ TeamSchema.statics.getMembers = async function (team) {
             return memberData;
         })) || [];
         
+        const adminData = await Member.findById(team.adminId);
+        adminData.set('password', undefined);
+        members.unshift(adminData);
+
         if (!members) throw new Error('there is no members to get');
 
         return members;

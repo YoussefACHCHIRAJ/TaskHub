@@ -1,5 +1,5 @@
 const { decodeToken } = require("../../core/functions");
-const handleErrors = require("../../core/handleErrors");
+const HandleErrors = require("../../core/handleErrors");
 const Tasks = require("../../model/tasks");
 const Team = require("../../model/team");
 
@@ -26,7 +26,7 @@ const createTask = async (req, res) => {
         res.status(201).json(newTask)
 
     } catch (error) {
-        const errors = handleErrors.tasksErrors(error.message);
+        const errors = HandleErrors.tasksErrors(error.message);
         console.log(errors);
         res.status(500).json({ error: errors });
     }

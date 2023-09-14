@@ -16,24 +16,19 @@ import {
   TableContainer,
   TablePagination,
   CircularProgress,
-  MenuItem,
-  InputLabel,
-  Select,
-  FormControl,
-  TextField,
-  Modal,
-  Box,
-  InputAdornment,
-  IconButton,
+
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 // hooks
 import useGetMembers from '../hooks/useGetMembers';
-import useStoreMember from '../hooks/useStoreMember';
 
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
+import { AddMemberModal } from '../components/models';
 import { UserListHead } from '../sections/@dashboard/user';
+import useAuthContext from '../hooks/useAuthContext';
 // mock
 
 // ----------------------------------------------------------------------
@@ -77,9 +72,10 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function MembersPage() {
+  const { user } = useAuthContext();
 
-  const { getMembersError, getMembersIsLoading, members } = useGetMembers('http://localhost:8080/member');
-  const { error, isLoading, storeMember } = useStoreMember('http://localhost:8080/member/create')
+
+  const { getMembersError, getMembersIsLoading, members } = useGetMembers('http://localhost:3001/member');
 
   const [page, setPage] = useState(0);
 
@@ -94,14 +90,6 @@ export default function MembersPage() {
 
   const [openModal, setOpenModal] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(false);
-
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Frontend');
-
   let users = []
 
   if (!getMembersIsLoading && members) {
@@ -115,13 +103,7 @@ export default function MembersPage() {
   }
 
 
-  const cancel = () => {
-    setName('');
-    setEmail('');
-    setPassword('');
-    setRole('Fronend');
-    setOpenModal(false)
-  }
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -144,29 +126,10 @@ export default function MembersPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-  const submitStoreMember = async e => {
-    e.preventDefault();
-    const isMemberSotred = await storeMember({ name, email, password, role });
-
-    if (isLoading) {
-      console.log('loding...');
-    } else {
-      console.log('loaded');
-      if (isMemberSotred) {
-        setOpenModal(false);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      } else {
-        console.log('error: ', error);
-      }
-    }
-  }
-
   return (
     <>
       <Helmet>
-        <title> Member | Minimal UI </title>
+        <title> Member | TaskHub </title>
       </Helmet>
 
       <Container>
@@ -174,86 +137,24 @@ export default function MembersPage() {
           <Typography variant="h4" gutterBottom>
             Members
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
+          {user.member.post.toLowerCase() === 'admin' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
             New Member
-          </Button>
+          </Button>)}
         </Stack>
 
-        <Modal open={openModal} onClose={() => setOpenModal(false)}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
-            <Typography variant='h4' gutterBottom >Add New Member</Typography>
-            <Box component='form'>
-              <Stack spacing={2}>
-                <TextField
-                  onChange={e => setName(e.target.value)}
-                  id="outlined-basic"
-                  label="Full name"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  FormHelperTextProps={{
-                    style: {
-                      color: '#f44336',
-                    },
-                  }}
-                />
-                <TextField
-                  onChange={e => setEmail(e.target.value)}
-                  id="outlined-multiline-flexible"
-                  label="Email"
-                  name='email'
-                  type='email'
-                  maxRows={4}
-                  multiline
-                  fullWidth
-                  required
-                  FormHelperTextProps={{
-                    style: {
-                      color: '#f44336',
-                    },
-                  }}
-                />
-                <TextField
-                  name="password"
-                  label="Password"
-                  onChange={e => setPassword(e.target.value)}
-                  type={showPassword ? 'text' : 'password'}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                          <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <FormControl sx={{ m: 1, width: '100%' }}>
-                  <InputLabel id="demo-multiple-name-label">Role</InputLabel>
-                  <Select
-                    onChange={e => setRole(e.target.value)}
-                    labelId="demo-multiple-name-label"
-                    id="demo-multiple-name"
-                    label='Role'
-                    value={role}
-                  >
-                    <MenuItem value='Frontend'>Front end</MenuItem>
-                    <MenuItem value='Backend'>Back end</MenuItem>
-                    <MenuItem value='Designer'>Designer</MenuItem>
-                    <MenuItem value='Devops'>Devops</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <Button onClick={submitStoreMember} variant="contained">Add this Member</Button>
-                <Button onClick={cancel}>Cancel</Button>
-              </Stack>
-            </Box>
-          </Box>
-        </Modal>
+        <AddMemberModal
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+        />
 
         {getMembersIsLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
 
-          getMembersError ? 'no members' :
+          getMembersError ?
+            <Alert severity="info">
+              <AlertTitle>info</AlertTitle>
+              There is no Members yet
+            </Alert>
+            :
 
             (<Card>
 
@@ -278,7 +179,7 @@ export default function MembersPage() {
                             <TableCell component="th" scope="row" padding="none">
                               <Stack direction="row" alignItems="center" spacing={2} sx={{ paddingLeft: '4px' }}>
                                 <Typography variant="subtitle2" noWrap>
-                                  {name}
+                                  {name}{user.member.name === name && " (You)"}
                                 </Typography>
                               </Stack>
                             </TableCell>

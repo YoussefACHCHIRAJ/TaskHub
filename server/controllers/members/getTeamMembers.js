@@ -1,5 +1,5 @@
-const { decodeToken } = require("../core/functions");
-const Team = require("../model/team");
+const { decodeToken } = require("../../core/functions");
+const Team = require("../../model/team");
 
 const getTeamMembers = async (req, res) => {
     try {
@@ -11,8 +11,6 @@ const getTeamMembers = async (req, res) => {
 
         const decodedToken = await decodeToken(token);
 
-        console.log(decodedToken);
-
         const team = await Team.findOne({name: decodedToken.team});
         const members = await Team.getMembers(team);
 
@@ -22,4 +20,4 @@ const getTeamMembers = async (req, res) => {
     }
 }
 
-module.exports = getTeamMembers
+module.exports = getTeamMembers;

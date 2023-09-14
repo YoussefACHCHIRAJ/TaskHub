@@ -1,6 +1,7 @@
-const { decodeToken } = require("../core/functions");
-const Member = require("../model/member");
-const Team = require("../model/team");
+const { decodeToken } = require("../../core/functions");
+const HandleErrors = require("../../core/handleErrors");
+const Member = require("../../model/member");
+const Team = require("../../model/team");
 
 const createMember = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -20,8 +21,9 @@ const createMember = async (req, res) => {
         res.status(201).json(newMember);
 
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error.message });
+        console.log(error)
+        const err = HandleErrors.createMemberErrors(error.message);
+        res.status(500).json({ error: err });
     }
 }
 

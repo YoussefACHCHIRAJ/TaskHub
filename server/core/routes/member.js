@@ -1,14 +1,10 @@
 const express = require('express');
-const createMember = require('../../controllers/member');
-const getTeamMembers = require('../../controllers/getTeamMembers');
+const createMember = require('../../controllers/members/createMember');
+const getTeamMembers = require('../../controllers/members/getTeamMembers');
 
 const router = express.Router();
 
 router.get('/',getTeamMembers);
-
-router.get("/create", (req, res) => {
-    res.render("members");
-})
 
 router.post("/create",createMember);
 

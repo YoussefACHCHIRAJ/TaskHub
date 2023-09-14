@@ -1,23 +1,23 @@
-const { decodedToken } = require("../../core/functions");
+const { decodeToken } = require("../../core/functions");
 const Member = require("../../model/member");
 const Team = require("../../model/team");
 
 const createTeam = async (req, res) => {
     const { name } = req.body;
     try {
-        const token = req.cookies.jwt;
-        
-        if(!token) throw new Error("can not catch any token");
-        
-        const tokenDecoded = await decodedToken(token);
+        const {authorization} = req.headers;
 
-        if(!tokenDecoded) throw new Error("can not found admin id");
+        if(!authorization) return res.status(401).json({error: 'authorization token required.'})
+
+        const token = authorization.split(' ')[1];
         
-        const newTeam = new Team({ name, adminId: tokenDecoded.id, tasks: [], members: [] });
+        const decodedToken = await decodeToken(token);
+        
+        if(!decodedToken) throw new Error("can not found admin id");
+        
+        const newTeam = new Team({ name, adminId: decodedToken.id, tasks: [], members: [] });
         await newTeam.save();
         
-        console.log('[create token]',tokenDecoded);
-        console.log('[create newteam]',newTeam);
 
         res.status(201).json({newTeam });
     } catch (error) {

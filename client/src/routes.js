@@ -10,6 +10,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import TasksPage from './pages/TasksPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRouter, { ProtectLoginPage } from './utils/ProtectedRouter';
+import Register from './pages/RegisterPage';
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +30,10 @@ export default function Router() {
     {
       path: '/login',
       element: <ProtectLoginPage loginPage={<LoginPage />} />,
+    },
+    {
+      path: '/register',
+      element: <ProtectLoginPage loginPage={<Register />} />,
     },
     {
       path: 'profile',

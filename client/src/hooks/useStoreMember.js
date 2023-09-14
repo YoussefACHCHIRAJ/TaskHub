@@ -23,6 +23,7 @@ const useStoreMember = endpoint => {
             if(result.error){
                 setError(result.error);
                 setIsLoading(false);
+                console.log(error);
                 return false;
             }
 

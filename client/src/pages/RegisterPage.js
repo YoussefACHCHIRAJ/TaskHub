@@ -1,15 +1,16 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom'
+
 // @mui
 import { styled } from '@mui/material/styles';
 import { Container, Typography } from '@mui/material';
+import {Link} from 'react-router-dom'
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
 import Logo from '../components/logo';
 // sections
-import { LoginForm } from '../sections/auth';
+import { RegisterForm } from '../sections/auth';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ const StyledSection = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   boxShadow: theme.customShadows.card,
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.palette.background.default,  
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
@@ -41,14 +42,14 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function LoginPage() {
+export default function Register() {
   const mdUp = useResponsive('up', 'md');
-
+  
 
   return (
     <>
       <Helmet>
-        <title> Login | TaskHub </title>
+        <title> Register | TaskHub </title>
       </Helmet>
 
       <StyledRoot>
@@ -72,15 +73,16 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to TaskHub
+              Register to TaskHub
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Don't have an account? {''}
-                <Link to='/register' className='text-blue-600 font-semibold'>Get started</Link>
+              Already have an account? {''}
+              <Link to='/login' className='text-blue-600 font-semibold'>Sign in</Link>
+
             </Typography>
 
-            <LoginForm />
+            <RegisterForm />
           </StyledContent>
         </Container>
       </StyledRoot>

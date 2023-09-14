@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
 // @mui
-import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
+import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 // components
-import Iconify from '../../../components/iconify';
-import { useLogin } from '../../../hooks/useLogin';
+import Iconify from '../../components/iconify';
+import { useLogin } from '../../hooks/useLogin';
+
 
 // ----------------------------------------------------------------------
 
@@ -19,7 +20,7 @@ export default function LoginForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const isLoged = await login('http://localhost:8080/auth/login', { email, password });
+    const isLoged = await login('http://localhost:3001/auth/login', { email, password });
    
     if(isLoged) console.log('loged');
    
@@ -59,10 +60,10 @@ export default function LoginForm() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" disabled={isLoading} onClick={handleSubmit}>
+      <LoadingButton className='bg-black mt-4' fullWidth size="large" type="submit" variant="contained" disabled={isLoading} onClick={handleSubmit}>
         Login
       </LoadingButton>
-      {error && (<div>{error}</div>)}
+      {error && (<Typography color='error'>{error}</Typography>)}
     </>
   );
 }

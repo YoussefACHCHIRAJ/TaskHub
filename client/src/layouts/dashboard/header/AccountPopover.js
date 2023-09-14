@@ -14,7 +14,7 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const {logout} = useLogout();
   const { user } = useAuthContext();
-  
+    
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
@@ -71,10 +71,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user.member.name}
+            {user? user.member.name : 'Ghost'}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            { user.member.email}
+            {user? user.member.email: "Ghost"}
           </Typography>
         </Box>
 

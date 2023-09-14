@@ -16,15 +16,19 @@ const memberSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "Pleaze provide a password for the member"],
-        trim: [true,"Provide a valid password"],
+        trim: [true, "Provide a valid password"],
         minLength: [7, "Minimum length for the password is 7"]
     },
     post: {
         type: String,
-        required: [true, "Pleaze provide a post for the member"],
+        default: 'Admin'
     },
     team: {
         type: String,
+        unique: true,
+        required: [true, 'Pleaze provide a team name'],
+        trim: true,
+        minLength: 2
     },
     tasks: {
         type: Array,
@@ -52,18 +56,16 @@ memberSchema.statics.login = async function (email, password) {
     }
 }
 
-memberSchema.statics.create = async function ({ name, email, password, post, team }) {
+memberSchema.statics.create = async function ({ name, email, password, team, post = 'admin' }) {
 
     try {
         const slate = await bcrypt.genSalt();
 
         if (!slate) throw new Error("can not generate a slate");
-        console.log('slate', slate);
 
         const hashPassword = await bcrypt.hash(password, slate)
 
         if (!hashPassword) throw new Error("can not hash the password");
-        console.log('password hashing', hashPassword);
 
         const newMember = new this({ name, email, password: hashPassword, post, team })
         await newMember.save();
