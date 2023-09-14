@@ -33,8 +33,7 @@ const AddMemberModal = ({ openModal, setOpenModal }) => {
 
     const submitStoreMember = async e => {
         e.preventDefault();
-        const isMemberStored = await storeMember({ name, email, password, role });
-
+        const isMemberStored = await storeMember({ name, email, password: password.trim(), role });
         if (isLoading) {
             console.log('loding...');
         } else {
@@ -46,6 +45,7 @@ const AddMemberModal = ({ openModal, setOpenModal }) => {
                 }, 1000);
             } else {
                 console.log('error: ', error);
+                
             }
         }
     }
@@ -62,6 +62,8 @@ const AddMemberModal = ({ openModal, setOpenModal }) => {
                             variant="outlined"
                             fullWidth
                             required
+                            error = {error && error.name}
+                            helperText={error ? error.name : ''}
                             FormHelperTextProps={{
                                 style: {
                                     color: '#f44336',
@@ -78,6 +80,8 @@ const AddMemberModal = ({ openModal, setOpenModal }) => {
                             multiline
                             fullWidth
                             required
+                            error = {error && error.email}
+                            helperText={error && error.email || ''}
                             FormHelperTextProps={{
                                 style: {
                                     color: '#f44336',
@@ -87,6 +91,9 @@ const AddMemberModal = ({ openModal, setOpenModal }) => {
                         <TextField
                             name="password"
                             label="Password"
+                            required
+                            error = {error? error.password : false}
+                            helperText={error ? error.password : ''}
                             onChange={e => setPassword(e.target.value)}
                             type={showPassword ? 'text' : 'password'}
                             InputProps={{

@@ -4,7 +4,7 @@ import useAuthContext from './useAuthContext';
 const useStoreMember = endpoint => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const{user} = useAuthContext();
+    const { user } = useAuthContext();
 
 
     const storeMember = async memberData => {
@@ -20,23 +20,21 @@ const useStoreMember = endpoint => {
             });
             const result = await response.json();
 
-            if(result.error){
+            if (!response.ok) {
                 setError(result.error);
-                setIsLoading(false);
-                console.log(error);
                 return false;
             }
 
             setError(null);
-            setIsLoading(false);
             return true;
         } catch (error) {
             setError(error);
-            setIsLoading(false);
             return false;
+        } finally {
+            setIsLoading(false);
         }
     }
-    return {error, isLoading, storeMember}
+    return { error, isLoading, storeMember }
 }
 
 export default useStoreMember

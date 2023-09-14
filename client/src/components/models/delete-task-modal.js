@@ -1,3 +1,4 @@
+import React from 'react'
 import {
     Button,
     Dialog,
@@ -6,7 +7,6 @@ import {
     DialogContentText,
     DialogActions,
 } from '@mui/material'
-import React from 'react'
 import { useDeleteTask } from '../../hooks/useDeleteTask';
 
 const DeleteTaskModal = ({

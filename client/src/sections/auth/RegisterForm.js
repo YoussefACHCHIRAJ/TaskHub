@@ -12,10 +12,10 @@ import { useRegister } from '../../hooks/useRegister';
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [team, setTeam] = useState(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [team, setTeam] = useState('');
   const { register, error, isLoading } = useRegister()
 
 
@@ -25,9 +25,9 @@ export default function RegisterForm() {
     const registerData = { name, email, password, team }
     const isRegistered = await register('http://localhost:3001/auth/register', registerData);
     console.log("isRegistered", isRegistered);
-    if(isRegistered){
+    if (isRegistered) {
       console.log('user is register');
-    }else{
+    } else {
       console.log('user does not register');
       console.log(error);
     }
@@ -36,12 +36,27 @@ export default function RegisterForm() {
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="name" label="Full name" onChange={e => setName(e.target.value)} />
-        <TextField name="email" label="Email" onChange={e => setEmail(e.target.value)} />
+        <TextField
+          name="name"
+          required
+          label="Full name"
+          error = {error && error.name}
+          helperText= { error ? error.name : ''}
+          onChange={e => setName(e.target.value)} />
+        <TextField
+          name="email"
+          required
+          label="Email"
+          error = {error && error.email}
+          helperText= { error ? error.email : ''}
+          onChange={e => setEmail(e.target.value)} />
 
         <TextField
           name="password"
           label="Password"
+          required
+          error = {error && error.password}
+          helperText= { error ? error.password : ''}
           onChange={e => setPassword(e.target.value)}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
@@ -54,7 +69,13 @@ export default function RegisterForm() {
             ),
           }}
         />
-        <TextField name="team" label="Team name" onChange={e => setTeam(e.target.value)} />
+        <TextField
+          name="team"
+          required
+          label="Team name"
+          error = {error && error.team}
+          helperText= { error ? error.team : ''}
+          onChange={e => setTeam(e.target.value)} />
       </Stack>
 
       <LoadingButton className='bg-black mt-4' fullWidth size="large" type="submit" disabled={isLoading} variant="contained" onClick={handleSubmit}>

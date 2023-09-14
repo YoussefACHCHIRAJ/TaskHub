@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import dayjs from 'dayjs';
 import { Box, Button, FormControl, InputLabel, MenuItem, Modal, OutlinedInput, Select, Stack, TextField, Typography } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useTheme } from '@mui/material/styles';
 import { useStoreNewTask } from '../../hooks/useStoreNewTask';
+import useAuthContext from '../../hooks/useAuthContext';
 
 
 const today = dayjs();
@@ -34,31 +35,19 @@ const CreateTaskModal = ({
     members
 }) => {
     const theme = useTheme();
+    const { user } = useAuthContext()
 
-    const [title, setTitle] = React.useState(null);
-    const [description, setDescription] = React.useState(null);
-    const [dateStart, setDateStart] = React.useState(null);
-    const [deadline, setDeadline] = React.useState(null);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [dateStart, setDateStart] = useState('');
+    const [deadline, setDeadline] = useState('');
 
-    const [responsables, setResponsables] = React.useState([]);
+    const [responsables, setResponsables] = useState([]);
 
-    const [titleError, setTitleError] = useState('');
-    const [descriptionError, setDescriptionError] = useState('');
-    const [startError, setStartError] = useState('');
-    const [dueError, setDueError] = useState('');
 
-    
 
-    const { errors, isLoading, storeNewTask } = useStoreNewTask('http://localhost:3001/tasks/create',
-        { title, description, dateStart, deadline, responsables });
-    useEffect(() => {
-        if (errors) {
-            setTitleError(errors.title || '');
-            setDescriptionError(errors.description || '');
-            setStartError(errors.start || '');
-            setDueError(errors.due || '');
-        }
-    }, [errors]);
+    const { error, isLoading, storeNewTask } = useStoreNewTask('http://localhost:3001/tasks/create');
+
     const handleChangeResponsables = (event) => {
         const {
             target: { value },
@@ -67,29 +56,24 @@ const CreateTaskModal = ({
     };
 
     const handleCloseModal = () => {
-        setTitle(null);
-        setDescription(null);
-        setDateStart(null);
-        setDeadline(null);
+        setTitle('');
+        setDescription('');
+        setDateStart('');
+        setDeadline('');
         setResponsables([]);
 
-        setTitleError(null)
-        setDescriptionError(null)
-        setStartError(null)
-        setDueError(null)
         setOpenModal(false);
     };
 
     const submitTasks = async e => {
         e.preventDefault();
-
-        const isTaskAdd = await storeNewTask();
+        const responsablesArray = responsables.length > 0 ? responsables : null;
+        const isTaskAdd = await storeNewTask(
+            { title, description, dateStart, deadline, responsables: responsablesArray });
 
         if (isTaskAdd) {
             handleCloseModal();
             window.location.reload();
-        }else{
-            console.log('failed create task', errors);
         }
     }
     return (
@@ -100,12 +84,13 @@ const CreateTaskModal = ({
                     <Stack spacing={2}>
                         <TextField
                             onChange={e => setTitle(e.target.value)}
-                            helperText={titleError}
+                            helperText={error ? error.title : ''}
+                            error={error && error.title}
+                            required
                             id="outlined-basic"
                             label="Task title"
                             variant="outlined"
                             fullWidth
-                            required
                             FormHelperTextProps={{
                                 style: {
                                     color: '#f44336',
@@ -114,13 +99,14 @@ const CreateTaskModal = ({
                         />
                         <TextField
                             onChange={e => setDescription(e.target.value)}
-                            helperText={descriptionError}
+                            helperText={error ? error.description : ''}
+                            error={error && error.description}
+                            required
                             id="outlined-multiline-flexible"
                             label="task description"
                             maxRows={4}
                             multiline
                             fullWidth
-                            required
                             FormHelperTextProps={{
                                 style: {
                                     color: '#f44336',
@@ -129,29 +115,48 @@ const CreateTaskModal = ({
                         />
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <Stack direction={{ sx: 'column', sm: 'row' }} gap={2}>
+                                    
                                 <div>
                                     <DatePicker
                                         onChange={date => setDateStart(date)}
-                                        label='date start'
+                                        label='date start *'
                                         minDate={today}
-                                        
+                                        className="border border-red-500"
+                                        slotProps={{
+                                            textField: {
+                                                helperText: error ? error.dateStart : '',
+                                            },
+                                            tabs: {
+                                                color: 'red'
+                                            }
+                                        }}
                                     />
-                                    {startError && <Typography variant="body2" fontSize={12} paddingLeft={2} color="error">{startError}</Typography>}
+
                                 </div>
                                 <div>
                                     <DatePicker
                                         onChange={date => setDeadline(date)}
-                                        label='deadline'
+                                        label='deadline *'
                                         disabled={dateStart === null}
                                         minDate={dayjs(dateStart)}
+                                        error
+                                        slotProps={{
+                                            textField: {
+                                                helperText: error ? error.deadline : '',
+                                            },
+                                            
+                                        }}
                                     />
-                                    {dueError && <Typography variant="body2" fontSize={12} paddingLeft={2} color="error">{dueError}</Typography>}
                                 </div>
                             </Stack>
                         </LocalizationProvider>
 
-                        <FormControl sx={{ m: 1, width: '100%' }}>
+                        <FormControl
+                            sx={{ m: 1, width: '100%' }}
+                            error={error && error.responsables}
+                            required>
                             <InputLabel id="demo-multiple-name-label">Responsables</InputLabel>
+
                             <Select
                                 labelId="demo-multiple-name-label"
                                 id="demo-multiple-name"
@@ -161,16 +166,25 @@ const CreateTaskModal = ({
                                 input={<OutlinedInput label="Name" />}
                                 MenuProps={MenuProps}
                             >
-                                {members.map((member) => (
-                                    <MenuItem
-                                        key={member.id}
-                                        value={member.name}
-                                        style={getStyles(member, responsables, theme)}
-                                    >
-                                        {member.name}
-                                    </MenuItem>
-                                ))}
+
+                                {members.map((member) => {
+                                    const memberName = member.name === user.member.name
+                                        ? `${member.name} (You)`
+                                        : member.name;
+                                    return (
+                                        <MenuItem
+                                            key={member.id}
+                                            value={member.name}
+                                            style={getStyles(member, responsables, theme)}
+                                        >
+                                            {memberName}
+                                        </MenuItem>
+                                    )
+                                })}
+
                             </Select>
+                            {error && error.responsables && (<Typography className='block sm:px-4' variant='caption' color='error'>{error.responsables}</Typography>)}
+
                         </FormControl>
 
                         <Button className='bg-black hover:bg-gray-900' disabled={isLoading} variant="contained" onClick={submitTasks}>Add this task</Button>

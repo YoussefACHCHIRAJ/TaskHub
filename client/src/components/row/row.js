@@ -17,7 +17,7 @@ const Row = (props) => {
         const startDate = new Date(start);
         const dueDate = new Date(due);
         if (startDate > today) {
-            return {etat: 'Wait', etatColor: 'black'}
+            return {etat: 'Pending', etatColor: 'black'}
         } 
         if (startDate <= today && dueDate > today) {
             return {etat: 'Progress', etatColor: 'green'}
