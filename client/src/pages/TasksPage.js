@@ -139,7 +139,7 @@ export default function TaskPage() {
                     </TableHead>
                     <TableBody>
                       {rows.map((row) => (
-                        <Row key={row.id} row={row} handleOpenMenu={handleOpenMenu} />
+                        <Row key={row.id} row={row} handleOpenMenu={handleOpenMenu} options={Boolean(true)} />
                       ))
                       }
                     </TableBody>

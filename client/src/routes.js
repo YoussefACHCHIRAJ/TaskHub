@@ -11,6 +11,7 @@ import TasksPage from './pages/TasksPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRouter, { ProtectLoginPage } from './utils/ProtectedRouter';
 import Register from './pages/RegisterPage';
+import YourTasksPage from './pages/YourTasksPage';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ export default function Router() {
         { path: 'app', element: <ProtectedRouter element={<DashboardAppPage />} /> },
         { path: 'members', element: <ProtectedRouter element={<MembersPage />} /> },
         { path: 'tasks', element: <ProtectedRouter element={<TasksPage />} /> },
+        { path: 'yourTasks', element: <ProtectedRouter element={<YourTasksPage />} /> },
         { path: 'profile', element: <ProtectedRouter element={<ProfilePage />} /> },
       ],
     },

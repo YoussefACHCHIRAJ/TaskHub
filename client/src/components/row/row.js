@@ -9,7 +9,7 @@ import useAuthContext from '../../hooks/useAuthContext';
 
 const Row = (props) => {
     const { user } = useAuthContext()
-    const { row, handleOpenMenu } = props;
+    const { row, handleOpenMenu, options } = props;
     const [open, setOpen] = useState(false);
 
     const taskStatus = (start, due) => {
@@ -51,7 +51,7 @@ const Row = (props) => {
                         </Stack>
                     </Typography>
                 </TableCell>
-                {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center">
+                {user.member.post.toLowerCase() === 'admin' && options && (<TableCell align="center">
                     <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row.id)}>
                         <Iconify icon={'eva:more-vertical-fill'} />
                     </IconButton>
