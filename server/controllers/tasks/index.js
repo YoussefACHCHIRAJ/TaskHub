@@ -6,7 +6,7 @@ const tasks = async (req, res) => {
     try {
         const {authorization} = req.headers;
 
-        if(!authorization) return res.status(401).json({error: 'authorization token required.'})
+        if(!authorization) throw {authorization: {message: "The Token is required."}}
 
         const token = authorization.split(' ')[1];
         
@@ -14,7 +14,7 @@ const tasks = async (req, res) => {
 
         const team = await Team.findOne({ name: decodedToken.team });
 
-        if (!team) throw new Error("there is no team yet.");
+        if (!team) throw {taskError: {message: "The team is required. Pleaze create a team."}}
 
         const tasks = await Tasks.find({ teamId: team._id });
         

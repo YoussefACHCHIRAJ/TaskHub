@@ -5,7 +5,7 @@ const getTeamMembers = async (req, res) => {
     try {
         const {authorization} = req.headers;
 
-        if(!authorization) throw new Error('The token is required');
+        if(!authorization) throw {authorization: {message: "The Token is required."}}
 
         const token = authorization.split(' ')[1];
 

@@ -17,7 +17,6 @@ const register = async (req, res) => {
         res.status(201).json({member, token});
     } catch (err) {
         const error = HandleErrors.createMemberErrors(err);
-        console.log('handled error: ', error);
         res.status(400).json({ error });
 
     }

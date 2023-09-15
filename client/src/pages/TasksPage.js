@@ -31,10 +31,11 @@ import Row from '../components/row/row';
 
 import Iconify from '../components/iconify';
 import useAuthContext from '../hooks/useAuthContext';
+import CategorizeTasksModale from '../components/models/categorize-tasks-model';
 
 
 
-function createData(id, title, start, due, description, responsables) {
+function createData(id, title, start, due, description, responsables, categorize) {
   return {
     id,
     title,
@@ -42,6 +43,7 @@ function createData(id, title, start, due, description, responsables) {
     due,
     description,
     responsables,
+    categorize
   };
 }
 
@@ -49,24 +51,25 @@ function createData(id, title, start, due, description, responsables) {
 export default function TaskPage() {
   const { user } = useAuthContext();
 
-  
+
   const [taskSelected, setTaskSelected] = React.useState(null);
 
-  
+
   const { tasks, teamMembers, error, isTasksLoading } = useGetTasks('http://localhost:3001/tasks/');
 
   const [open, setOpen] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
-  
+  const [categorize, setCategorize] = React.useState('All');
+
   let rows = [];
   let members = [];
- 
+
 
 
   if (!isTasksLoading && tasks) {
-    rows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables));
+    rows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables, categorize));
     members = teamMembers.map(member => ({ id: member._id, name: member.name }));
   }
 
@@ -86,13 +89,16 @@ export default function TaskPage() {
         <title> Tasks | TaskHub </title>
       </Helmet>
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h4" gutterBottom>
             Tasks
           </Typography>
-          {user.member.post.toLowerCase() === 'admin' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
-            New Task
-          </Button>) }
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
+            {user.member.post.toLowerCase() === 'admin' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
+              New Task
+            </Button>)}
+          </Stack>
         </Stack>
 
         <CreateTaskModal
@@ -100,7 +106,7 @@ export default function TaskPage() {
           setOpenModal={setOpenModal}
           members={members}
         />
-        <DeleteTaskModal 
+        <DeleteTaskModal
           deleteConfirmationOpen={deleteConfirmationOpen}
           setDeleteConfirmationOpen={setDeleteConfirmationOpen}
           taskSelected={taskSelected}
@@ -127,7 +133,7 @@ export default function TaskPage() {
                         <TableCell>Task title</TableCell>
                         <TableCell align="center">Start</TableCell>
                         <TableCell align="center">Due</TableCell>
-                        <TableCell align="center">Etat</TableCell>
+                        <TableCell align="center">Status</TableCell>
                         {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center"> </TableCell>)}
                       </TableRow>
                     </TableHead>

@@ -9,7 +9,7 @@ const deleteTask = async (req, res) => {
     try {
         const { authorization } = req.headers;
 
-        if (!authorization) throw new Error('token is required');
+        if (!authorization) throw {authorization: {message: "The Token is required."}}
 
         const token = authorization.split(' ')[1];;
 
@@ -17,12 +17,12 @@ const deleteTask = async (req, res) => {
         const decodedToken = await decodeToken(token);
         const _id = new mongoose.Types.ObjectId(id.toString());
 
-        const deleteResult = await Tasks.deleteOne({ _id });
+        const deletedTask = await Tasks.deleteOne({ _id });
 
-        if (!deleteResult) throw new Error('failed to delete the task');
+        if (!deletedTask) throw {deleteError: {message: "Failed delete the task."}}
 
         await Team.deleteTask(id, decodedToken.team);
-        res.status(201).json({ res: 'task deleted' + deleteResult })
+        res.status(201).json({ res: `The task deleted: ${deletedTask}` })
 
     } catch (error) {
         console.log(error);

@@ -12,20 +12,21 @@ const Row = (props) => {
     const { row, handleOpenMenu } = props;
     const [open, setOpen] = useState(false);
 
-    const taskEtat = (start, due) => {
+    const taskStatus = (start, due) => {
         const today = new Date();
         const startDate = new Date(start);
         const dueDate = new Date(due);
         if (startDate > today) {
-            return {etat: 'Pending', etatColor: 'black'}
-        } 
-        if (startDate <= today && dueDate > today) {
-            return {etat: 'Progress', etatColor: 'green'}
+            return { status: 'Pending', statusColor: 'Orange', statusIcon: 'material-symbols:pending' }
         }
-        return {etat: 'Complete', etatColor: 'red'}
+        if (startDate <= today && dueDate > today) {
+            return { status: 'In Progress', statusColor: 'green', statusIcon: 'grommet-icons:in-progress' }
+        }
+        return { status: 'Complete', statusColor: 'red', statusIcon: 'fluent-mdl2:completed' }
     }
 
-    const {etat, etatColor} = taskEtat(row.start, row.due);
+    const { status, statusColor, statusIcon } = taskStatus(row.start, row.due);
+    if (row.categorize !== 'All' && row.categorize !== status) return null;
     return (
         <>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -44,7 +45,11 @@ const Row = (props) => {
                 <TableCell align="center">{row.start}</TableCell>
                 <TableCell align="center">{row.due}</TableCell>
                 <TableCell align="center">
-                    <Typography sx={{color: etatColor}}>{etat}</Typography>
+                    <Typography sx={{ color: statusColor }}>
+                        <Stack direction="row" alignItems="center" justifyContent="center" gap={1}>
+                            {status} <Iconify icon={statusIcon} className='w-4 h-4' />
+                        </Stack>
+                    </Typography>
                 </TableCell>
                 {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center">
                     <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row.id)}>

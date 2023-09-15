@@ -8,7 +8,7 @@ const createTask = async (req, res) => {
     try {
         const { authorization } = req.headers;
 
-        if (!authorization) throw new Error('authorization is required');
+        if (!authorization) throw {authorization: {message: "The Token is required."}}
 
         const token = authorization.split(' ')[1];
 
@@ -27,7 +27,6 @@ const createTask = async (req, res) => {
 
     } catch (err) {
         const error = HandleErrors.tasksErrors(err.errors);
-        console.log('task errors: ', error);
         res.status(500).json({ error });
     }
 }

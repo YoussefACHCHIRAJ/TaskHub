@@ -1,5 +1,5 @@
 const Member = require("../../model/member.js");
-const { createToken, maxAge } = require("../../core/functions.js");
+const { createToken } = require("../../core/functions.js");
 const HandleErrors = require("../../core/handleErrors.js");
 
 const logIn = async (req, res) => {
@@ -10,7 +10,6 @@ const logIn = async (req, res) => {
         const member = await Member.login(email, password);
 
         const token = createToken({ id: member._id, post: member.post, team: member.team });
-
 
         res.status(200).json({ member, token });
 

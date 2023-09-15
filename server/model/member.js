@@ -62,8 +62,7 @@ memberSchema.statics.login = async function (email, password) {
                 }
             }
         }
-        member = member.toObject();
-        delete member.password;
+        member.set('password', undefined);
         return member;
     } catch (error) {
         throw (error);
