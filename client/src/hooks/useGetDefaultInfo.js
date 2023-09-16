@@ -4,7 +4,7 @@ import useAuthContext from './useAuthContext';
 const useGetDefaultInfo = (endpoint) => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [defaultInfo, setDefaultInfo] = useState(null);
+    const [defaultInfo, setDefaultInfo] = useState({ memberNumber: 0, tasksNumber: 0, userTasksNumber: 0, tasks: [] });
     const { user } = useAuthContext();
     const {name } = user.member
 

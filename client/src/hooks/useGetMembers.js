@@ -34,7 +34,7 @@ const useGetMembers = (endpoint) => {
         getMembers();
     }, [endpoint, user.token]);
 
-    return { getMembersError: error, getMembersIsLoading: isLoading, members};
+    return {  error, isLoading, members};
 }
 
 export default useGetMembers

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
     Button,
     Dialog,
@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { useDeleteTask } from '../../hooks/useDeleteTask';
 
-const DeleteTaskModal = ({
+const DeleteTaskModel = ({
     deleteConfirmationOpen,
     setDeleteConfirmationOpen,
     taskSelected,
@@ -17,7 +17,6 @@ const DeleteTaskModal = ({
     setSnackbarMsg
 }) => {
     const { deleteError, deleteIsLoading, deleteTask } = useDeleteTask(`http://localhost:3001/tasks/delete/${taskSelected}`);
-    useEffect(() => console.log('model: ', taskSelected), [taskSelected])
     const submitDeleteTask = async () => {
         const isTaskDeleted = await deleteTask();
         if (isTaskDeleted) {
@@ -34,6 +33,7 @@ const DeleteTaskModal = ({
             console.log('error: ', deleteError);
         }
     }
+    console.log('delete: ', taskSelected);
     return (
         <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>
             <DialogTitle>Delete Task</DialogTitle>
@@ -55,4 +55,4 @@ const DeleteTaskModal = ({
     )
 }
 
-export default DeleteTaskModal
+export default DeleteTaskModel

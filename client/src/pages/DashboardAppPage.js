@@ -1,14 +1,12 @@
 import { Helmet } from 'react-helmet-async';
-import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography } from '@mui/material';
+import { Grid, Container, Typography, Alert, AlertTitle, CircularProgress } from '@mui/material';
 // components
 // import Iconify from '../components/iconify';
 // sections
 import {
   AppNewsUpdate,
-  AppOrderTimeline,
   AppWebsiteVisits,
   AppWidgetSummary,
   AppCurrentSubject,
@@ -23,23 +21,36 @@ export default function DashboardAppPage() {
   const theme = useTheme();
   const { user } = useAuthContext();
   const { error, isLoading, defaultInfo } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${user.member.name}`);
+  console.table(error)
 
-  
-  const { memberNumber, tasksNumber, userTasksNumber } = defaultInfo !== null ? defaultInfo : 0;
-  const tasks = defaultInfo !== null ? defaultInfo.tasks : [];
-  if (isLoading) return null;
-  console.log(tasks);
+  if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
+
+  if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+    <Alert severity="error">
+      <AlertTitle>error</AlertTitle>
+      {error.message}<br />
+      This could be due a server issue.<br />
+      Check if you are connecting to the server or internet.<br />
+    </Alert>
+  </Typography>)
+
+  const { memberNumber, tasksNumber, userTasksNumber, tasks } = defaultInfo;
   return (
     <>
       <Helmet>
         <title> Dashboard | TaskHub </title>
       </Helmet>
+      {error && <Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+        <Alert severity="error">
+          <AlertTitle>error</AlertTitle>
+          {error.message}
+        </Alert>
+      </Typography>}
 
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
         </Typography>
-        {error && <Typography variant='body2'>{error}</Typography>}
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Members" total={memberNumber} icon={'ri:user-fill'} />
@@ -62,7 +73,7 @@ export default function DashboardAppPage() {
                 postedAt: fDateTime(task.createdAt)
               }))}
             />
-            {/* <Typography variant='subtitle1'>There is no new tasks</Typography> */}
+
           </Grid>
 
           <Grid item xs={12} md={6} lg={4}>

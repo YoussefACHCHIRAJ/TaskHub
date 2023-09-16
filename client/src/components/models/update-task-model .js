@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import dayjs from 'dayjs';
 import { Box, Button, FormControl, InputLabel, MenuItem, Modal, OutlinedInput, Select, Stack, TextField, Typography } from '@mui/material'
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
@@ -29,12 +29,14 @@ function getStyles(member, responsables, theme) {
     };
 }
 
-const CreateTaskModal = ({
-    openModal,
-    setOpenModal,
+const UpdateTaskModel = ({
+    openUpdate,
+    setOpenUpdate,
     members,
     setOpenSnackbar,
-    setSnackbarMsg
+    setSnackbarMsg,
+    taskSelected,
+    tasks
 }) => {
     const theme = useTheme();
     const { user } = useAuthContext()
@@ -62,8 +64,10 @@ const CreateTaskModal = ({
         setDeadline('');
         setResponsables([]);
 
-        setOpenModal(false);
+        setOpenUpdate(false);
     };
+
+    console.log('update: ', taskSelected);
 
     const submitTasks = async e => {
         e.preventDefault();
@@ -82,8 +86,19 @@ const CreateTaskModal = ({
             }
         }
     }
+    useEffect(() => {
+        if (taskSelected) {
+            const taskSelectedToUpdate = tasks.find(task => task.id === taskSelected) || {};
+            const { title, description, dateStart, deadline, responsables } = taskSelectedToUpdate;
+            setTitle(title);
+            setDescription(description);
+            setDateStart(dateStart);
+            setDeadline(deadline);
+            setResponsables(responsables);
+        }
+    }, [ taskSelected, tasks]);
     return (
-        <Modal open={openModal} onClose={handleCloseModal}>
+        <Modal open={openUpdate} onClose={handleCloseModal}>
             <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
                 <Typography variant='h4' gutterBottom >Add New task</Typography>
                 <Box component='form'>
@@ -96,6 +111,7 @@ const CreateTaskModal = ({
                             id="outlined-basic"
                             label="Task title"
                             variant="outlined"
+                            defaultValue={title}
                             fullWidth
                             FormHelperTextProps={{
                                 style: {
@@ -108,6 +124,7 @@ const CreateTaskModal = ({
                             helperText={error ? error.description : ''}
                             error={error && error.description}
                             required
+                            defaultValue={description}
                             id="outlined-multiline-flexible"
                             label="task description"
                             maxRows={4}
@@ -121,11 +138,12 @@ const CreateTaskModal = ({
                         />
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <Stack direction={{ sx: 'column', sm: 'row' }} gap={2}>
-                                    
+
                                 <div>
                                     <DatePicker
                                         onChange={date => setDateStart(date)}
                                         label='date start *'
+                                        value={dayjs(dateStart)}
                                         minDate={today}
                                         slotProps={{
                                             textField: {
@@ -142,6 +160,7 @@ const CreateTaskModal = ({
                                     <DatePicker
                                         onChange={date => setDeadline(date)}
                                         label='deadline *'
+                                        value={dayjs(deadline)}
                                         disabled={dateStart === null}
                                         minDate={dayjs(dateStart)}
                                         error
@@ -149,7 +168,7 @@ const CreateTaskModal = ({
                                             textField: {
                                                 helperText: error ? error.deadline : '',
                                             },
-                                            
+
                                         }}
                                     />
                                 </div>
@@ -201,4 +220,4 @@ const CreateTaskModal = ({
     )
 }
 
-export default CreateTaskModal
+export default UpdateTaskModel

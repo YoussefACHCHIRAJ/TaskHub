@@ -26,7 +26,7 @@ import useGetMembers from '../hooks/useGetMembers';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { AddMemberModal } from '../components/models';
+import { AddMemberModel } from '../components/models';
 import { UserListHead } from '../sections/@dashboard/user';
 import useAuthContext from '../hooks/useAuthContext';
 // mock
@@ -75,7 +75,7 @@ export default function MembersPage() {
   const { user } = useAuthContext();
 
 
-  const { getMembersError, getMembersIsLoading, members } = useGetMembers('http://localhost:3001/member');
+  const { error, isLoading, members } = useGetMembers('http://localhost:3001/member');
 
   const [page, setPage] = useState(0);
 
@@ -93,7 +93,7 @@ export default function MembersPage() {
   let users = []
   console.log('members: ', members);
 
-  if (!getMembersIsLoading && members) {
+  if (!isLoading && members) {
     users = members.map((member) => ({
       id: member._id,
       name: member.name,
@@ -127,6 +127,18 @@ export default function MembersPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
+
+  if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
+
+  if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+    <Alert severity="error">
+      <AlertTitle>error</AlertTitle>
+      {error.message}<br />
+      This could be due a server issue.<br />
+      Check if you are connecting to the server or internet.<br />
+    </Alert>
+  </Typography>)
+
   return (
     <>
       <Helmet>
@@ -144,14 +156,14 @@ export default function MembersPage() {
             </Button>)}
         </Stack>
 
-        <AddMemberModal
+        <AddMemberModel
           openModal={openModal}
           setOpenModal={setOpenModal}
         />
 
-        {getMembersIsLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
+        {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
 
-          getMembersError ?
+          !filteredUsers.length ?
             <Alert severity="info">
               <AlertTitle>info</AlertTitle>
               There is no Members yet

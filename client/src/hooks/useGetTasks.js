@@ -38,6 +38,6 @@ export const useGetTasks = (endpoint) => {
         }
         getTasks();
     }, [endpoint, user.token])
-    return { tasks, teamMembers, error, isTasksLoading:isLoading };
+    return { tasks, teamMembers, error, isLoading };
 }
 

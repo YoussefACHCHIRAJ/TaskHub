@@ -1,9 +1,11 @@
-import CreateTaskModal from "./create-task-modal";
-import AddMemberModal from "./add-member-modal";
-import DeleteTaskModal from "./delete-task-modal";
+import CreateTaskModel from "./create-task-model";
+import UpdateTaskModel from "./update-task-model ";
+import AddMemberModel from "./add-member-model";
+import DeleteTaskModel from "./delete-task-model";
 
 export {
-    CreateTaskModal,
-    AddMemberModal,
-    DeleteTaskModal
+    CreateTaskModel,
+    AddMemberModel,
+    DeleteTaskModel,
+    UpdateTaskModel
 }

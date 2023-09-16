@@ -22,7 +22,7 @@ import {
   AlertTitle,
 } from '@mui/material';
 
-import { DeleteTaskModal, CreateTaskModal } from '../components/models';
+import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel } from '../components/models';
 import { useGetTasks } from '../hooks/useGetTasks';
 import { fDate } from '../utils/formatTime';
 
@@ -55,36 +55,49 @@ export default function TaskPage() {
   const [taskSelected, setTaskSelected] = React.useState(null);
 
 
-  const { tasks, teamMembers, error, isTasksLoading } = useGetTasks('http://localhost:3001/tasks/');
+  const { tasks, teamMembers, error, isLoading } = useGetTasks('http://localhost:3001/tasks/');
 
   const [open, setOpen] = React.useState(false);
+  const [openUpdate, setOpenUpdate] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
-  const [categorize, setCategorize] = React.useState('All');
   const [rows, setRows] = React.useState([]);
   const [members, setMembers] = React.useState([]);
   const [snackbarMsg, setSnackbarMsg] = React.useState('');
-  
+  const [categorize, setCategorize] = React.useState('All');
+
   React.useEffect(() => {
-    if (!isTasksLoading && tasks) {
+    if (!isLoading && tasks) {
       const newRows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables, categorize));
       setRows(newRows);
       const newMembers = teamMembers.map(member => ({ id: member._id, name: member.name }));
       setMembers(newMembers);
     }
-  }, [isTasksLoading, tasks, teamMembers, categorize]);
+  }, [isLoading, tasks, teamMembers, categorize]);
 
   const handleOpenMenu = (event, taskId) => {
     setTaskSelected(taskId);
     setOpen(event.currentTarget);
+    console.log('three point:', taskSelected)
   };
+
   const handleCloseMenu = () => {
     setOpen(null);
     setTaskSelected(null);
   };
 
-  React.useEffect(() => console.log('origin:', taskSelected), [taskSelected]);
+  if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
+
+  if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+    <Alert severity="error">
+      <AlertTitle>error</AlertTitle>
+      {error.message}<br />
+      This could be due a server issue.<br />
+      Check if you are connecting to the server or internet.<br />
+    </Alert>
+  </Typography>)
+
 
   return (
     <>
@@ -104,14 +117,14 @@ export default function TaskPage() {
           </Stack>
         </Stack>
 
-        <CreateTaskModal
+        <CreateTaskModel
           openModal={openModal}
           setOpenModal={setOpenModal}
           members={members}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
         />
-        <DeleteTaskModal
+        <DeleteTaskModel
           deleteConfirmationOpen={deleteConfirmationOpen}
           setDeleteConfirmationOpen={setDeleteConfirmationOpen}
           taskSelected={taskSelected}
@@ -119,8 +132,18 @@ export default function TaskPage() {
           setSnackbarMsg={setSnackbarMsg}
         />
 
+        <UpdateTaskModel
+          openUpdate={openUpdate}
+          setOpenUpdate={setOpenUpdate}
+          members={members}
+          setOpenSnackbar={setOpenSnackbar}
+          setSnackbarMsg={setSnackbarMsg}
+          taskSelected={taskSelected}
+          tasks={rows}
+        />
 
-        {isTasksLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
+
+        {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
           rows.length === 0 ?
             <Alert severity="info">
               <AlertTitle>info</AlertTitle>
@@ -128,9 +151,7 @@ export default function TaskPage() {
             </Alert>
             :
             <Card>
-              {error && <Typography variant='body2'>{error}</Typography>}
               <Scrollbar>
-
                 <TableContainer component={Paper}>
                   <Table aria-label="collapsible table">
                     <TableHead>
@@ -177,6 +198,10 @@ export default function TaskPage() {
         <MenuItem sx={{ color: 'error.main' }} onClick={() => setDeleteConfirmationOpen(true)} >
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete task
+        </MenuItem>
+        <MenuItem sx={{ color: 'success.main' }} onClick={() => setOpenUpdate(true)} >
+          <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
+          Update task
         </MenuItem>
       </Popover>
 

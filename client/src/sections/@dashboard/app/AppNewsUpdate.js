@@ -21,11 +21,13 @@ export default function AppNewsUpdate({ title, subheader, list, ...other }) {
       <CardHeader title={title} subheader={subheader} />
 
       <Scrollbar>
-        <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
-          {list.map((news) => (
-            <NewsItem key={news.id} news={news} />
-          ))}
-        </Stack>
+        {list.length > 0 ? (
+          <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
+            {list.map((news) => (
+              <NewsItem key={news.id} news={news} />
+            ))}
+          </Stack>
+        ) : (<Typography variant='subtitle1' className='py-4 px-8'>There is no new tasks</Typography>)}
       </Scrollbar>
 
       <Divider />

@@ -11,24 +11,19 @@ import {
     Paper,
     Card,
     Container,
-    MenuItem,
-    Popover,
     Typography,
     Stack,
     CircularProgress,
-    Snackbar,
     Alert,
     AlertTitle,
 } from '@mui/material';
 
-import { DeleteTaskModal, CreateTaskModal } from '../components/models';
 import { useGetTasks } from '../hooks/useGetTasks';
 import { fDate } from '../utils/formatTime';
 
 import Scrollbar from '../components/scrollbar';
 import Row from '../components/row/row';
 
-import Iconify from '../components/iconify';
 import useAuthContext from '../hooks/useAuthContext';
 import CategorizeTasksModale from '../components/models/categorize-tasks-model';
 
@@ -50,14 +45,14 @@ function createData(id, title, start, due, description, responsables, categorize
 export default function YourTasksPage() {
     const { user } = useAuthContext();
 
-    const { tasks, teamMembers, error, isTasksLoading } = useGetTasks('http://localhost:3001/tasks/');
+    const { tasks, error, isLoading } = useGetTasks('http://localhost:3001/tasks/');
     const [categorize, setCategorize] = React.useState('All');
 
     let rows = [];
 
-    if (!isTasksLoading && tasks) {
-        rows = tasks.filter(task => task.responsables.includes(user.member.name)).map(task => {
-            return createData(
+    if (!isLoading && tasks) {
+        rows = tasks.filter(task => task.responsables.includes(user.member.name))
+            .map(task => createData(
                 task._id,
                 task.title,
                 fDate(task.dateStart),
@@ -65,9 +60,18 @@ export default function YourTasksPage() {
                 task.description,
                 task.responsables,
                 categorize)
-        });
+            );
     }
+    if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 
+    if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+        <Alert severity="error">
+            <AlertTitle>error</AlertTitle>
+            {error.message}<br/>
+            This could be due a server issue.<br/>
+            Check if you are connecting to the server or internet.<br/>
+        </Alert>
+    </Typography>)
     return (
         <>
             <Helmet>
@@ -81,7 +85,7 @@ export default function YourTasksPage() {
                     <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
                 </Stack>
 
-                {isTasksLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
+                {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
                     rows.length === 0 ?
                         <Alert severity="info">
                             <AlertTitle>info</AlertTitle>
@@ -89,7 +93,6 @@ export default function YourTasksPage() {
                         </Alert>
                         :
                         <Card>
-                            {error && <Typography variant='body2'>{error}</Typography>}
                             <Scrollbar>
 
                                 <TableContainer component={Paper}>

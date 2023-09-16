@@ -15,7 +15,7 @@ import {
 import useStoreMember from '../../hooks/useStoreMember';
 import Iconify from '../iconify';
 
-const AddMemberModal = ({ openModal, setOpenModal }) => {
+const AddMemberModel = ({ openModal, setOpenModal }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -131,4 +131,4 @@ const AddMemberModal = ({ openModal, setOpenModal }) => {
     )
 }
 
-export default AddMemberModal
+export default AddMemberModel
