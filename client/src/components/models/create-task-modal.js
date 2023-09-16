@@ -127,7 +127,6 @@ const CreateTaskModal = ({
                                         onChange={date => setDateStart(date)}
                                         label='date start *'
                                         minDate={today}
-                                        className="border border-red-500"
                                         slotProps={{
                                             textField: {
                                                 helperText: error ? error.dateStart : '',
