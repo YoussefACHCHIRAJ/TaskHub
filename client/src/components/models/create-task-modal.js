@@ -46,8 +46,6 @@ const CreateTaskModal = ({
 
     const [responsables, setResponsables] = useState([]);
 
-
-
     const { error, isLoading, storeNewTask } = useStoreNewTask('http://localhost:3001/tasks/create');
 
     const handleChangeResponsables = (event) => {
