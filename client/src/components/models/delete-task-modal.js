@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
     Button,
     Dialog,
@@ -13,23 +13,25 @@ const DeleteTaskModal = ({
     deleteConfirmationOpen,
     setDeleteConfirmationOpen,
     taskSelected,
-    setOpenSnackbar
+    setOpenSnackbar,
+    setSnackbarMsg
 }) => {
     const { deleteError, deleteIsLoading, deleteTask } = useDeleteTask(`http://localhost:3001/tasks/delete/${taskSelected}`);
-
+    useEffect(() => console.log('model: ', taskSelected), [taskSelected])
     const submitDeleteTask = async () => {
         const isTaskDeleted = await deleteTask();
         if (isTaskDeleted) {
             setOpenSnackbar(true);
+            setSnackbarMsg('This task was deleted.')
             setDeleteConfirmationOpen(false);
             if (!deleteIsLoading) {
                 setTimeout(() => {
                     window.location.reload();
-                }, 1000);
+                }, 1500);
             }
 
         } else {
-            console.log(deleteError);
+            console.log('error: ', deleteError);
         }
     }
     return (

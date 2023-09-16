@@ -91,6 +91,7 @@ export default function MembersPage() {
   const [openModal, setOpenModal] = useState(false);
 
   let users = []
+  console.log('members: ', members);
 
   if (!getMembersIsLoading && members) {
     users = members.map((member) => ({

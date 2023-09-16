@@ -62,16 +62,18 @@ export default function TaskPage() {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
   const [categorize, setCategorize] = React.useState('All');
-
-  let rows = [];
-  let members = [];
-
-
-
-  if (!isTasksLoading && tasks) {
-    rows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables, categorize));
-    members = teamMembers.map(member => ({ id: member._id, name: member.name }));
-  }
+  const [rows, setRows] = React.useState([]);
+  const [members, setMembers] = React.useState([]);
+  const [snackbarMsg, setSnackbarMsg] = React.useState('');
+  
+  React.useEffect(() => {
+    if (!isTasksLoading && tasks) {
+      const newRows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables, categorize));
+      setRows(newRows);
+      const newMembers = teamMembers.map(member => ({ id: member._id, name: member.name }));
+      setMembers(newMembers);
+    }
+  }, [isTasksLoading, tasks, teamMembers, categorize]);
 
   const handleOpenMenu = (event, taskId) => {
     setTaskSelected(taskId);
@@ -82,6 +84,7 @@ export default function TaskPage() {
     setTaskSelected(null);
   };
 
+  React.useEffect(() => console.log('origin:', taskSelected), [taskSelected]);
 
   return (
     <>
@@ -105,12 +108,15 @@ export default function TaskPage() {
           openModal={openModal}
           setOpenModal={setOpenModal}
           members={members}
+          setOpenSnackbar={setOpenSnackbar}
+          setSnackbarMsg={setSnackbarMsg}
         />
         <DeleteTaskModal
           deleteConfirmationOpen={deleteConfirmationOpen}
           setDeleteConfirmationOpen={setDeleteConfirmationOpen}
           taskSelected={taskSelected}
           setOpenSnackbar={setOpenSnackbar}
+          setSnackbarMsg={setSnackbarMsg}
         />
 
 
@@ -176,7 +182,7 @@ export default function TaskPage() {
 
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
-          This was deleted
+          {snackbarMsg}
         </Alert>
       </Snackbar>
     </>

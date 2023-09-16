@@ -13,11 +13,23 @@ import {
   AppWidgetSummary,
   AppCurrentSubject,
 } from '../sections/@dashboard/app';
+import useGetDefaultInfo from '../hooks/useGetDefaultInfo';
+import useAuthContext from '../hooks/useAuthContext';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+  const {user } = useAuthContext();
+  const { error, isLoading, defaultInfo } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${user.member.name}`);
+  
+  
+  const { memberNumber, tasksNumber, userTasksNumber } = defaultInfo !== null ? defaultInfo : 0;
+
+  if (isLoading) return null;
+
+  console.log('defaultInfo', defaultInfo)
+  console.log('error', error);
 
   return (
     <>
@@ -32,11 +44,15 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Members" total={20}  icon={'ri:user-fill'} />
+            <AppWidgetSummary title="Members" total={memberNumber} icon={'ri:user-fill'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Tasks"  color="error" total={30} icon={'fluent:tasks-app-20-filled'} />
+            <AppWidgetSummary title="Tasks" color="error" total={tasksNumber} icon={'fluent:tasks-app-20-filled'} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <AppWidgetSummary title="Your Tasks" color="success" total={userTasksNumber} icon={'fluent:tasks-app-20-filled'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

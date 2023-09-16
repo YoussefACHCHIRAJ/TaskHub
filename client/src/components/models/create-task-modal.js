@@ -32,7 +32,9 @@ function getStyles(member, responsables, theme) {
 const CreateTaskModal = ({
     openModal,
     setOpenModal,
-    members
+    members,
+    setOpenSnackbar,
+    setSnackbarMsg
 }) => {
     const theme = useTheme();
     const { user } = useAuthContext()
@@ -73,7 +75,13 @@ const CreateTaskModal = ({
 
         if (isTaskAdd) {
             handleCloseModal();
-            window.location.reload();
+            setOpenSnackbar(true);
+            setSnackbarMsg('This task was add.');
+            if (!isLoading) {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
         }
     }
     return (

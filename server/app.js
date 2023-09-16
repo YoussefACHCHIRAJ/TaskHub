@@ -9,6 +9,8 @@ const profileRouter = require('./core/routes/profile.js');
 const checkMember = require('./core/authentication.js');
 const authorization = require('./core/authorization.js');
 
+const defaultInfo = require('./controllers/defaultInfo.js');
+
 const app = express();
 /*  middelware */
 app.use(express.static('public'));
@@ -19,6 +21,8 @@ app.use(cors())
 /* ROUTES */
 app.get("*", checkMember);
 
+
+app.get("/defaultInfo/:name", defaultInfo);
 app.use('/tasks',authorization.logedAuth,tasksRouter);
 app.use('/auth',authRouter);
 app.use("/member",authorization.logedAuth,memberRouter);
