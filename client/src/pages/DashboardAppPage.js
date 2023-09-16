@@ -15,22 +15,20 @@ import {
 } from '../sections/@dashboard/app';
 import useGetDefaultInfo from '../hooks/useGetDefaultInfo';
 import useAuthContext from '../hooks/useAuthContext';
+import { fDateTime } from '../utils/formatTime';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
-  const {user } = useAuthContext();
+  const { user } = useAuthContext();
   const { error, isLoading, defaultInfo } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${user.member.name}`);
-  
+
   
   const { memberNumber, tasksNumber, userTasksNumber } = defaultInfo !== null ? defaultInfo : 0;
-
+  const tasks = defaultInfo !== null ? defaultInfo.tasks : [];
   if (isLoading) return null;
-
-  console.log('defaultInfo', defaultInfo)
-  console.log('error', error);
-
+  console.log(tasks);
   return (
     <>
       <Helmet>
@@ -41,7 +39,7 @@ export default function DashboardAppPage() {
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
         </Typography>
-
+        {error && <Typography variant='body2'>{error}</Typography>}
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Members" total={memberNumber} icon={'ri:user-fill'} />
@@ -58,14 +56,13 @@ export default function DashboardAppPage() {
           <Grid item xs={12} md={6} lg={8}>
             <AppNewsUpdate
               title="News Tasks"
-              list={[...Array(5)].map((_, index) => ({
-                id: faker.datatype.uuid(),
-                title: faker.name.jobTitle(),
-                description: faker.name.jobTitle(),
-                image: `/assets/images/covers/cover_${index + 1}.jpg`,
-                postedAt: faker.date.recent(),
+              list={tasks.map(task => ({
+                id: task._id,
+                title: task.title,
+                postedAt: fDateTime(task.createdAt)
               }))}
             />
+            {/* <Typography variant='subtitle1'>There is no new tasks</Typography> */}
           </Grid>
 
           <Grid item xs={12} md={6} lg={4}>
@@ -81,7 +78,7 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
+          <Grid item xs={12} md={12} lg={12}>
             <AppWebsiteVisits
               title="Tasks"
               chartLabels={[
@@ -99,7 +96,7 @@ export default function DashboardAppPage() {
               ]}
               chartData={[
                 {
-                  name: 'Team B',
+                  name: 'Tasks',
                   type: 'area',
                   fill: 'gradient',
                   data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
@@ -108,23 +105,6 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={4}>
-            <AppOrderTimeline
-              title="Order Tasks"
-              list={[...Array(5)].map((_, index) => ({
-                id: faker.datatype.uuid(),
-                title: [
-                  '1983, orders, $4220',
-                  '12 Invoices have been paid',
-                  'Order #37745 from September',
-                  'New order placed #XF-2356',
-                  'New order placed #XF-2346',
-                ][index],
-                type: `order${index + 1}`,
-                time: faker.date.past(),
-              }))}
-            />
-          </Grid>
         </Grid>
       </Container>
     </>

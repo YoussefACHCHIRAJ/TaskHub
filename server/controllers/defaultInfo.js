@@ -24,7 +24,7 @@ const defaultInfo = async (req, res) => {
         const memberNumber = team.members.length;
         const tasksNumber = team.tasks.length;
         const userTasksNumber = userTasks.length;
-        res.status(200).json({ memberNumber, tasksNumber, userTasksNumber });
+        res.status(200).json({ memberNumber, tasksNumber, userTasksNumber, tasks: tasks.reverse() });
     } catch (error) {
         console.log(error);
         res.status(400).json({ error });
