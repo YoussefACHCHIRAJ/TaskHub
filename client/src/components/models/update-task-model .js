@@ -48,7 +48,7 @@ const UpdateTaskModel = ({
 
     const [responsables, setResponsables] = useState([]);
 
-    const { error, isLoading, storeNewTask } = useStoreNewTask('http://localhost:3001/tasks/create');
+    const { error, isLoading, storeNewTask } = useStoreNewTask(`http://localhost:3001/tasks/update/${taskSelected}`);
 
     const handleChangeResponsables = (event) => {
         const {
@@ -78,7 +78,7 @@ const UpdateTaskModel = ({
         if (isTaskAdd) {
             handleCloseModal();
             setOpenSnackbar(true);
-            setSnackbarMsg('This task was add.');
+            setSnackbarMsg('This task was updated.');
             if (!isLoading) {
                 setTimeout(() => {
                     window.location.reload();
@@ -211,7 +211,7 @@ const UpdateTaskModel = ({
 
                         </FormControl>
 
-                        <Button className='bg-black hover:bg-gray-900' disabled={isLoading} variant="contained" onClick={submitTasks}>Add this task</Button>
+                        <Button className='bg-black hover:bg-gray-900' disabled={isLoading} variant="contained" onClick={submitTasks}>Update this task</Button>
                         <Button onClick={handleCloseModal}>Cancel</Button>
                     </Stack>
                 </Box>

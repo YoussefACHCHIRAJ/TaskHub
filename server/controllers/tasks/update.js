@@ -9,6 +9,7 @@ const updateTask = async (req, res) => {
 
         res.status(200).render("tasks/update",{tasks})
     } catch (error) {
+        console.table(error)
         res.status(503).json({error: error.message});
     }
 }
