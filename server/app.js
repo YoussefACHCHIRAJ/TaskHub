@@ -6,7 +6,6 @@ const authRouter = require('./core/routes/auth.js');
 const memberRouter = require('./core/routes/member.js');
 const profileRouter = require('./core/routes/profile.js');
 
-const checkMember = require('./core/authentication.js');
 const authorization = require('./core/authorization.js');
 
 const defaultInfo = require('./controllers/defaultInfo.js');
@@ -19,7 +18,6 @@ app.use(cookieParser());
 app.use(cors())
 
 /* ROUTES */
-app.get("*", checkMember);
 
 
 app.get("/defaultInfo/:name", defaultInfo);

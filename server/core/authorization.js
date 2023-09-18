@@ -39,9 +39,9 @@ class authorization {
         
         jwt.verify(token, process.env.secret_Key, async function (error, decoded) {
             if (error) {
-                return res.json({error: 'forbidden'});
+                return res.status(403).json({error: 'forbidden'});
             };
-            if (decoded.post !== 'admin') return res.redirect("/");
+            if (decoded.post !== 'admin') return res.status(401).json({message: 'Unauthorized.'});
             next();
         });
     }
@@ -49,10 +49,10 @@ class authorization {
     static async createTeamAuth(req, res, next) {
         try {
             const team = await Team.find();
-            console.log(team);
+            
             if (!team.length) return next();
             
-            return res.redirect("/team");
+            return res.status(401).json({message: 'Unauthorized.'});
 
         } catch (error) {
             res.status(500).json({ error: error.message })
