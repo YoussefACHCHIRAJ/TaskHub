@@ -13,25 +13,33 @@ const decodeToken = async token => {
 
         const tokenDecoded = await jwt.verify(token, process.env.secret_Key);
 
-        if (!tokenDecoded) throw new Error(`can not decoded token`);
+        if (!tokenDecoded) throw {error:{
+            message: 'Failed decoded Token.'
+        }}
 
         return tokenDecoded;
 
     } catch (error) {
-        throw new Error(`somthig went wrong when decoded token: ${error.message}`);
+        throw {error: {
+            message: `somthig went wrong while decoded token: ${error.message}`
+        }}
     }
 }
 
 const hashingPassword = async (password) => {
     const slate = await bcrypt.genSalt();
 
-    if (!slate) throw new Error("can not generate a slate");
+    if (!slate) throw {error: {
+        message: "Can not generate a slate"
+    }}
 
     const hashPassword = await bcrypt.hash(password, slate)
 
     console.log('hashPassword: ', hashPassword);
 
-    if (!hashPassword) throw new Error("can not hash the password");
+    if (!hashPassword) throw {error: {
+        message: "Can not hash the password"
+    }}
 
     return hashPassword;
 }
