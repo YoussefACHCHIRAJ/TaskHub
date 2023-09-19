@@ -22,13 +22,17 @@ TeamSchema.statics.addMember = async function (adminId, id) {
     try {
         const team = await this.findOne({ adminId });
 
-        if (!team) throw new Error("can not found team");
+        if (!team) throw {error: {
+            message: 'The team does not exist.'
+        }}
 
         team.members.push(id);
         await team.save();
 
     } catch (error) {
-        throw new Error(`add member failed: ${error.message}`);
+        throw {error : {
+            message: `Add member failed: ${error.message}`
+        }}
     }
 }
 
@@ -47,12 +51,16 @@ TeamSchema.statics.getMembers = async function (team) {
         adminData.set('password', undefined);
         members.unshift(adminData);
 
-        if (!members) throw new Error('there is no members to get');
+        if (!members) throw {error: {
+            message: "There is no members in the team."
+        }}
 
         return members;
     
     } catch (error) {
-        throw new Error(`can not get members: ${error.message}`);
+        throw {error: {
+            message: `Can not get members: ${error.message}`
+        }}
     }
 }
 
@@ -64,12 +72,16 @@ TeamSchema.statics.deleteTask = async function(id, teamName) {
             {$pull: {tasks: {$in: [_id]}}},
             {new: true});
 
-        if(!team) throw new Error(`can not found team`);
+        if(!team) throw {error: {
+            message: "The team does not exist."
+        }}
 
         return;
 
     } catch (error) {
-        throw new Error(`can not delete the task from team: ${error.message}`)
+        throw {error: {
+            message: `Delete the task from team failed: ${error.message}`
+        }}
     }
 }
 
