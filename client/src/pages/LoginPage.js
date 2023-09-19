@@ -60,17 +60,13 @@ export default function LoginPage() {
           }}
         />
 
-        {mdUp && (
-          <StyledSection>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
-            </Typography>
-            <img src="/assets/illustrations/illustration_login.png" alt="login" />
-          </StyledSection>
-        )}
+        
 
         <Container maxWidth="sm">
           <StyledContent>
+          <Typography variant="h3" sx={{  mt: 2, mb: 2 }}>
+              Hi, Welcome Back
+            </Typography>
             <Typography variant="h4" gutterBottom>
               Sign in to TaskHub
             </Typography>
