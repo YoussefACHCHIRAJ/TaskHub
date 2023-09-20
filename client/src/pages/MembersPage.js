@@ -19,6 +19,9 @@ import {
 
   Alert,
   AlertTitle,
+  IconButton,
+  Popover,
+  MenuItem,
 } from '@mui/material';
 // hooks
 import useGetMembers from '../hooks/useGetMembers';
@@ -38,6 +41,7 @@ const TABLE_HEAD = [
   { id: 'email', label: 'Email', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
   { id: 'team', label: 'Team', alignRight: false },
+  { id: 'actions', label: ' ', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -90,6 +94,17 @@ export default function MembersPage() {
 
   const [openModal, setOpenModal] = useState(false);
 
+  const [open, setOpen] = useState(false);
+
+  const [openUpdate, setOpenUpdate] = useState(false);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+
+  const [taskSelected, setTaskSelected] = useState(null);
+
+
   let users = []
   console.log('members: ', members);
 
@@ -119,6 +134,17 @@ export default function MembersPage() {
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+  const handleOpenMenu = (event, taskId) => {
+    setTaskSelected(taskId);
+    setOpen(event.currentTarget);
+    console.log('three point:', taskSelected);
+  };
+
+  const handleCloseMenu = () => {
+    setOpen(null);
+    setTaskSelected(null);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
@@ -178,7 +204,7 @@ export default function MembersPage() {
                     <UserListHead
                       order={order}
                       orderBy={orderBy}
-                      headLabel={TABLE_HEAD}
+                      headLabel={user?.member?.post.toLowerCase() === 'admin' ? TABLE_HEAD : TABLE_HEAD.slice(0, -1)}
                       rowCount={users.length}
                       onRequestSort={handleRequestSort}
                     />
@@ -203,6 +229,11 @@ export default function MembersPage() {
                             <TableCell align="left">{role}</TableCell>
 
                             <TableCell align="left">{team}</TableCell>
+                            {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center">
+                              <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row.id)}>
+                                <Iconify icon={'eva:more-vertical-fill'} />
+                              </IconButton>
+                            </TableCell>)}
 
                           </TableRow>
                         );
@@ -252,8 +283,34 @@ export default function MembersPage() {
               />
             </Card>)
         }
-
       </Container>
+      <Popover
+        open={Boolean(open)}
+        anchorEl={open}
+        onClose={handleCloseMenu}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            p: 1,
+            width: 140,
+            '& .MuiMenuItem-root': {
+              px: 1,
+              typography: 'body2',
+              borderRadius: 0.75,
+            },
+          },
+        }}
+      >
+        <MenuItem sx={{ color: 'error.main' }} onClick={() => setDeleteConfirmationOpen(true)} >
+          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+          Delete Member
+        </MenuItem>
+        <MenuItem sx={{ color: 'success.main' }} onClick={() => setOpenUpdate(true)} >
+          <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
+          Update Member
+        </MenuItem>
+      </Popover>
     </>
   );
 }
