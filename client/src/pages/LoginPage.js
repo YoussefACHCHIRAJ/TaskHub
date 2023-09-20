@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 // @mui
 import { styled } from '@mui/material/styles';
 import { Container, Typography } from '@mui/material';
-// hooks
-import useResponsive from '../hooks/useResponsive';
 // components
 import Logo from '../components/logo';
 // sections
@@ -19,15 +17,6 @@ const StyledRoot = styled('div')(({ theme }) => ({
   },
 }));
 
-const StyledSection = styled('div')(({ theme }) => ({
-  width: '100%',
-  maxWidth: 480,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  boxShadow: theme.customShadows.card,
-  backgroundColor: theme.palette.background.default,
-}));
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 480,
@@ -42,7 +31,6 @@ const StyledContent = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
-  const mdUp = useResponsive('up', 'md');
 
 
   return (
@@ -64,7 +52,7 @@ export default function LoginPage() {
 
         <Container maxWidth="sm">
           <StyledContent>
-          <Typography variant="h3" sx={{  mt: 2, mb: 2 }}>
+          <Typography variant="h3" sx={{mt: 2, mb: 2 }}>
               Hi, Welcome Back
             </Typography>
             <Typography variant="h4" gutterBottom>
