@@ -22,6 +22,7 @@ import {
   IconButton,
   Popover,
   MenuItem,
+  Snackbar,
 } from '@mui/material';
 // hooks
 import useGetMembers from '../hooks/useGetMembers';
@@ -29,7 +30,7 @@ import useGetMembers from '../hooks/useGetMembers';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { AddMemberModel } from '../components/models';
+import { AddMemberModel, DeleteMemberModel } from '../components/models';
 import { UserListHead } from '../sections/@dashboard/user';
 import useAuthContext from '../hooks/useAuthContext';
 // mock
@@ -100,9 +101,12 @@ export default function MembersPage() {
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const [snackbarMsg, setSnackbarMsg] = useState('');
+
+
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
-  const [taskSelected, setTaskSelected] = useState(null);
+  const [memberSelected, setMemberSelected] = useState(null);
 
 
   let users = []
@@ -136,15 +140,15 @@ export default function MembersPage() {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleOpenMenu = (event, taskId) => {
-    setTaskSelected(taskId);
+  const handleOpenMenu = (event, memberId) => {
+    setMemberSelected(memberId);
     setOpen(event.currentTarget);
-    console.log('three point:', taskSelected);
+    console.log('three point:', memberSelected);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
-    setTaskSelected(null);
+    setMemberSelected(null);
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
@@ -185,6 +189,13 @@ export default function MembersPage() {
         <AddMemberModel
           openModal={openModal}
           setOpenModal={setOpenModal}
+        />
+        <DeleteMemberModel
+          deleteConfirmationOpen={deleteConfirmationOpen}
+          setDeleteConfirmationOpen={setDeleteConfirmationOpen}
+          memberSelected={memberSelected}
+          setOpenSnackbar={setOpenSnackbar}
+          setSnackbarMsg={setSnackbarMsg}
         />
 
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
@@ -230,7 +241,7 @@ export default function MembersPage() {
 
                             <TableCell align="left">{team}</TableCell>
                             {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center">
-                              <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row.id)}>
+                              <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, id)}>
                                 <Iconify icon={'eva:more-vertical-fill'} />
                               </IconButton>
                             </TableCell>)}
@@ -311,6 +322,13 @@ export default function MembersPage() {
           Update Member
         </MenuItem>
       </Popover>
+
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+          {snackbarMsg}
+        </Alert>
+      </Snackbar>
+
     </>
   );
 }
