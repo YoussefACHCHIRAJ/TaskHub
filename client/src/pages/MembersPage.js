@@ -30,7 +30,7 @@ import useGetMembers from '../hooks/useGetMembers';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { AddMemberModel, DeleteMemberModel } from '../components/models';
+import { AddMemberModel, DeleteMemberModel, UpdateMemberModel } from '../components/models';
 import { UserListHead } from '../sections/@dashboard/user';
 import useAuthContext from '../hooks/useAuthContext';
 // mock
@@ -198,6 +198,16 @@ export default function MembersPage() {
           setSnackbarMsg={setSnackbarMsg}
         />
 
+        <UpdateMemberModel
+          openModal={openUpdate}
+          setOpenModal={setOpenUpdate}
+          memberSelected={memberSelected}
+          members={filteredUsers}
+          setOpenSnackbar={setOpenSnackbar}
+          setSnackbarMsg={setSnackbarMsg}
+        />
+
+
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
 
           !filteredUsers.length ?
@@ -240,7 +250,7 @@ export default function MembersPage() {
                             <TableCell align="left">{role}</TableCell>
 
                             <TableCell align="left">{team}</TableCell>
-                            {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center">
+                            {user.member.post.toLowerCase() === 'admin' && user.member.email !== email && (<TableCell align="center">
                               <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, id)}>
                                 <Iconify icon={'eva:more-vertical-fill'} />
                               </IconButton>
