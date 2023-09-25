@@ -112,14 +112,14 @@ export default function MembersPage() {
   let users = []
   console.log('members: ', members);
 
-  if (!isLoading && members) {
-    users = members.map((member) => ({
+  if (!isLoading) {
+    users = members?.map((member) => ({
       id: member._id,
       name: member.name,
       email: member.email,
       role: member.post,
       team: member.team,
-    }));
+    })) || [];
   }
 
 
