@@ -35,8 +35,6 @@ const hashingPassword = async (password) => {
 
     const hashPassword = await bcrypt.hash(password, slate)
 
-    console.log('hashPassword: ', hashPassword);
-
     if (!hashPassword) throw {error: {
         message: "Can not hash the password"
     }}

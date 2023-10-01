@@ -22,14 +22,6 @@ const ProfilePage = () => {
                     </Button>
                 </Stack>
                 <Box sx={{ padding: '1em' }}>
-                    <Avatar
-                        sx={{ width: '8em', height: "8em", borderRadius: '10px', marginBottom: '1em' }}
-                        src="/assets/images/avatars/avatar_default.jpg"
-                        alignItems='center'
-                        variant="square"
-                        alt="user"
-                    />
-
                     <Stack direction='row' spacing={1} alignItems='center'>
                         <Typography variant='h5'>
                             Full Name:
@@ -43,7 +35,7 @@ const ProfilePage = () => {
 
                     <Stack direction='row' spacing={1} alignItems='center'>
                         <Typography variant='h5'>
-                            Contact:
+                            Email:
                         </Typography>
                         <Typography variant='p'>
                             {user.member.email}

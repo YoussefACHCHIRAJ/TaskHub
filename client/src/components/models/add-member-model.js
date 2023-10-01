@@ -15,7 +15,12 @@ import {
 import useStoreMember from '../../hooks/useStoreMember';
 import Iconify from '../iconify';
 
-const AddMemberModel = ({ openModal, setOpenModal }) => {
+const AddMemberModel = ({
+    openModal,
+    setOpenModal,
+    setOpenSnackbar,
+    setSnackbarMsg
+}) => {
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -40,12 +45,14 @@ const AddMemberModel = ({ openModal, setOpenModal }) => {
             console.log('loaded');
             if (isMemberStored) {
                 setOpenModal(false);
+                setOpenSnackbar(true);
+                setSnackbarMsg('This member was add.');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
                 console.log('error: ', error);
-                
+
             }
         }
     }
@@ -62,7 +69,7 @@ const AddMemberModel = ({ openModal, setOpenModal }) => {
                             variant="outlined"
                             fullWidth
                             required
-                            error = {error && error.name}
+                            error={error && error.name}
                             helperText={error ? error.name : ''}
                             FormHelperTextProps={{
                                 style: {
@@ -80,7 +87,7 @@ const AddMemberModel = ({ openModal, setOpenModal }) => {
                             multiline
                             fullWidth
                             required
-                            error = {error && error.email}
+                            error={error && error.email}
                             helperText={error && error.email || ''}
                             FormHelperTextProps={{
                                 style: {
@@ -92,7 +99,7 @@ const AddMemberModel = ({ openModal, setOpenModal }) => {
                             name="password"
                             label="Password"
                             required
-                            error = {error? error.password : false}
+                            error={error ? error.password : false}
                             helperText={error ? error.password : ''}
                             onChange={e => setPassword(e.target.value)}
                             type={showPassword ? 'text' : 'password'}

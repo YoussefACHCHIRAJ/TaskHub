@@ -30,7 +30,7 @@ import useGetMembers from '../hooks/useGetMembers';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { AddMemberModel, DeleteMemberModel, UpdateMemberModel } from '../components/models';
+import { AddMemberModel } from '../components/models';
 import { UserListHead } from '../sections/@dashboard/user';
 import useAuthContext from '../hooks/useAuthContext';
 // mock
@@ -97,14 +97,10 @@ export default function MembersPage() {
 
   const [open, setOpen] = useState(false);
 
-  const [openUpdate, setOpenUpdate] = useState(false);
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const [snackbarMsg, setSnackbarMsg] = useState('');
 
-
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   const [memberSelected, setMemberSelected] = useState(null);
 
@@ -146,10 +142,6 @@ export default function MembersPage() {
     console.log('three point:', memberSelected);
   };
 
-  const handleCloseMenu = () => {
-    setOpen(null);
-    setMemberSelected(null);
-  };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
 
@@ -189,24 +181,9 @@ export default function MembersPage() {
         <AddMemberModel
           openModal={openModal}
           setOpenModal={setOpenModal}
-        />
-        <DeleteMemberModel
-          deleteConfirmationOpen={deleteConfirmationOpen}
-          setDeleteConfirmationOpen={setDeleteConfirmationOpen}
-          memberSelected={memberSelected}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
         />
-
-        <UpdateMemberModel
-          openModal={openUpdate}
-          setOpenModal={setOpenUpdate}
-          memberSelected={memberSelected}
-          members={filteredUsers}
-          setOpenSnackbar={setOpenSnackbar}
-          setSnackbarMsg={setSnackbarMsg}
-        />
-
 
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
 
@@ -305,33 +282,6 @@ export default function MembersPage() {
             </Card>)
         }
       </Container>
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem sx={{ color: 'error.main' }} onClick={() => setDeleteConfirmationOpen(true)} >
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete Member
-        </MenuItem>
-        <MenuItem sx={{ color: 'success.main' }} onClick={() => setOpenUpdate(true)} >
-          <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
-          Update Member
-        </MenuItem>
-      </Popover>
 
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>

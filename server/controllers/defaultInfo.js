@@ -15,7 +15,7 @@ const defaultInfo = async (req, res) => {
 
         const team = await Team.findOne({ name: decodedToken.team });
 
-        const tasks = await Promise.all(team.tasks.map(async task => {
+        const tasks = await Promise.all(team?.tasks?.map(async task => {
             return await Tasks.findById(task);
         }));
 

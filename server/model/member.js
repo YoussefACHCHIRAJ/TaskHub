@@ -31,15 +31,10 @@ const memberSchema = new mongoose.Schema({
     },
     team: {
         type: String,
-        unique: true,
         required: [true, 'Pleaze provide a valid team named'],
         trim: true,
         minLength: 2
-    },
-    tasks: {
-        type: Array,
-        default: []
-    },
+    }
 }, { timestamps: true });
 
 memberSchema.statics.login = async function (email, password) {
