@@ -6,12 +6,11 @@ import Iconify from '../iconify/Iconify';
 import useAuthContext from '../../hooks/useAuthContext';
 
 
+const Row = ({ row, handleOpenMenu, options }) => {
 
-const Row = (props) => {
-    const { user } = useAuthContext()
-    const { row, handleOpenMenu, options } = props;
+    const { auth } = useAuthContext()
     const [open, setOpen] = useState(false);
-
+   
     const taskStatus = (start, due) => {
         const today = new Date();
         const startDate = new Date(start);
@@ -51,7 +50,7 @@ const Row = (props) => {
                         </Stack>
                     </Typography>
                 </TableCell>
-                {user.member.post.toLowerCase() === 'admin' && options && (<TableCell align="center">
+                {auth.user.role.toLowerCase() === 'leader' && options && (<TableCell align="center">
                     <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row.id)}>
                         <Iconify icon={'eva:more-vertical-fill'} />
                     </IconButton>
@@ -73,11 +72,14 @@ const Row = (props) => {
                                 <Typography variant="h6" gutterBottom component="div">
                                     responsables
                                 </Typography>
-                                {row.responsables.map((respo, index) => (
-                                    <Typography key={index} variant="body2" gutterBottom component="p">
-                                        {respo}{user.member.name === respo && " (You)"}
-                                    </Typography>
-                                ))}
+                                {
+                                     row.responsibleUsers.map((respo, index) => {
+                                    return (
+                                        <Typography key={index} variant="body2" gutterBottom component="p">
+                                            {respo.name}{auth.user.name === respo.name && " (You)"}
+                                        </Typography>
+                                    )
+                                })}
                             </Stack>
                         </Box>
                     </Collapse>

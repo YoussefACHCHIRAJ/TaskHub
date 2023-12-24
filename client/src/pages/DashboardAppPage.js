@@ -1,3 +1,4 @@
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -19,9 +20,8 @@ import { fDateTime } from '../utils/formatTime';
 
 export default function DashboardAppPage() {
   const theme = useTheme();
-  const { user } = useAuthContext();
-  const { error, isLoading, defaultInfo } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${user.member.name}`);
-  console.table(error)
+  const { auth } = useAuthContext();
+  const { error, isLoading, data: defaultInfo } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${auth.user._id}`);
 
   if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 
@@ -34,7 +34,7 @@ export default function DashboardAppPage() {
     </Alert>
   </Typography>)
 
-  const { memberNumber, tasksNumber, userTasksNumber, tasks } = defaultInfo;
+  const { tasksCount, teamMembersCount, authUserTaskCount, tasks } = defaultInfo;
   return (
     <>
       <Helmet>
@@ -53,15 +53,15 @@ export default function DashboardAppPage() {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Members" total={memberNumber} icon={'ri:user-fill'} />
+            <AppWidgetSummary title="Members" total={teamMembersCount} icon={'ri:user-fill'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Tasks" color="error" total={tasksNumber} icon={'fluent:tasks-app-20-filled'} />
+            <AppWidgetSummary title="Tasks" color="error" total={tasksCount} icon={'fluent:tasks-app-20-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Your Tasks" color="success" total={userTasksNumber} icon={'fluent:tasks-app-20-filled'} />
+            <AppWidgetSummary title="Your Tasks" color="success" total={authUserTaskCount} icon={'fluent:tasks-app-20-filled'} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

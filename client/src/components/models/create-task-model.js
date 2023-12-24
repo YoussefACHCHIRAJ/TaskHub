@@ -4,7 +4,7 @@ import { Box, Button, FormControl, InputLabel, MenuItem, Modal, OutlinedInput, S
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useTheme } from '@mui/material/styles';
-import { useStoreNewTask } from '../../hooks/useStoreNewTask';
+import useStoreTask from '../../hooks/useStoreTask';
 import useAuthContext from '../../hooks/useAuthContext';
 
 
@@ -34,11 +34,12 @@ const CreateTaskModel = ({
     setOpenModal,
     members,
     setOpenSnackbar,
-    setSnackbarMsg
+    setSnackbarMsg,
+    reftechTasksData
 }) => {
     const theme = useTheme();
-    const { user } = useAuthContext()
-
+    const { auth } = useAuthContext()
+    console.log({ members });
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dateStart, setDateStart] = useState('');
@@ -46,7 +47,17 @@ const CreateTaskModel = ({
 
     const [responsables, setResponsables] = useState([]);
 
-    const { error, isLoading, storeNewTask } = useStoreNewTask('http://localhost:3001/tasks/create');
+    const { isError, error, isLoading, mutate: storeNewTask, reset } = useStoreTask({
+        onSuccess: () => {
+            handleCloseModal();
+            setOpenSnackbar(true);
+            setSnackbarMsg('This task was add.');
+            reftechTasksData();
+            setTimeout(() => {
+                setSnackbarMsg(false);
+            }, 1500);
+        }
+    });
 
     const handleChangeResponsables = (event) => {
         const {
@@ -68,19 +79,9 @@ const CreateTaskModel = ({
     const submitTasks = async e => {
         e.preventDefault();
         const responsablesArray = responsables.length > 0 ? responsables : null;
-        const isTaskAdd = await storeNewTask(
-            { title, description, dateStart, deadline, responsables: responsablesArray });
+        storeNewTask(
+            { title, description, dateStart, deadline, responsables: responsablesArray, teamId: auth.user.team });
 
-        if (isTaskAdd) {
-            handleCloseModal();
-            setOpenSnackbar(true);
-            setSnackbarMsg('This task was add.');
-            if (!isLoading) {
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            }
-        }
     }
     return (
         <Modal open={openModal} onClose={handleCloseModal}>
@@ -121,7 +122,7 @@ const CreateTaskModel = ({
                         />
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <Stack direction={{ sx: 'column', sm: 'row' }} gap={2}>
-                                    
+
                                 <div>
                                     <DatePicker
                                         onChange={date => setDateStart(date)}
@@ -149,7 +150,7 @@ const CreateTaskModel = ({
                                             textField: {
                                                 helperText: error ? error.deadline : '',
                                             },
-                                            
+
                                         }}
                                     />
                                 </div>
@@ -173,13 +174,13 @@ const CreateTaskModel = ({
                             >
 
                                 {members.map((member) => {
-                                    const memberName = member.name === user.member.name
+                                    const memberName = member.name === auth.user.name
                                         ? `${member.name} (You)`
                                         : member.name;
                                     return (
                                         <MenuItem
                                             key={member.id}
-                                            value={member.name}
+                                            value={member.id}
                                             style={getStyles(member, responsables, theme)}
                                         >
                                             {memberName}

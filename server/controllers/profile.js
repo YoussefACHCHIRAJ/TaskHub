@@ -1,5 +1,5 @@
 const {decodeToken} = require("../core/functions");
-const Member = require("../model/member");
+const Member = require("../model/User");
 
 const profile = async (req, res) => {
     // const _id = req.params.id;

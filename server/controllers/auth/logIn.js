@@ -1,4 +1,4 @@
-const Member = require("../../model/member.js");
+const User = require("../../model/User.js");
 const { createToken } = require("../../core/functions.js");
 const HandleErrors = require("../../core/handleErrors.js");
 
@@ -7,11 +7,11 @@ const logIn = async (req, res) => {
 
     try {
         
-        const member = await Member.login(email, password);
+        const user = await User.login(email, password);
 
-        const token = createToken({ id: member._id, post: member.post, team: member.team });
+        const token = createToken({ id: user._id, role: user.role });
 
-        res.status(200).json({ member, token });
+        res.status(200).json({ user, token });
 
     } catch (err) {
         const error = HandleErrors.loginErrors(err)

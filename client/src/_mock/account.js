@@ -4,11 +4,11 @@ import useAuthContext from "../hooks/useAuthContext";
 // ----------------------------------------------------------------------
 
 const Account = () => {
-  const { user } = useAuthContext();
+  const { auth } = useAuthContext();
 
   return {
-    displayName: user.member.name,
-    email: user.member.email,
+    displayName: auth.user.name,
+    email: auth.user.email,
     photoURL: '',
   };
 }

@@ -19,8 +19,17 @@ class HandleErrors {
 
     static createMemberErrors(error) {
         const handleErrors = new HandleErrors();
-        error && Object.keys(error).forEach(err => {
-            handleErrors.errors[err] = error[err].message;
+        if (error.message && error.message.includes('email_1 dup key')) {
+            error = {
+                errors: {
+                    email: {
+                        message: 'The email you provided is already used.'
+                    }
+                }
+            }
+        }
+        error.errors && Object.keys(error.errors).forEach(err => {
+            handleErrors.errors[err] = error.errors[err].message;
         });
         return handleErrors.errors;
 

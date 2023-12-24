@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { decodeToken } = require("../../core/functions");
-const Tasks = require("../../model/tasks");
-const Team = require("../../model/team");
+const Tasks = require("../../model/Task");
+const Team = require("../../model/Team");
 
 const deleteTask = async (req, res) => {
 

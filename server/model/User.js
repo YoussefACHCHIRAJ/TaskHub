@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 const { hashingPassword } = require('../core/functions');
 const validator = require("email-validator");
 
-const memberSchema = new mongoose.Schema({
+const UserSchema = new Schema({
     name: {
         type: String,
         required: [true, "Pleaze provide a valid name"],
@@ -18,7 +19,7 @@ const memberSchema = new mongoose.Schema({
             validator: value => {
                 return validator.validate(value);
             },
-            message: ()  => "This is not a valid email."
+            message: () => "This is not a valid email."
         }
     },
     password: {
@@ -26,18 +27,16 @@ const memberSchema = new mongoose.Schema({
         required: [true, "Pleaze provide a valid password."],
         minLength: [7, "The minimum length for the password is 7"]
     },
-    post: {
+    role: {
         type: String,
     },
     team: {
-        type: String,
-        required: [true, 'Pleaze provide a valid team named'],
-        trim: true,
-        minLength: 2
+        type: Schema.Types.ObjectId,
+        ref: 'Team'
     }
 }, { timestamps: true });
 
-memberSchema.statics.login = async function (email, password) {
+UserSchema.statics.login = async function (email, password) {
     try {
         let member = await this.findOne({ email });
 
@@ -64,27 +63,11 @@ memberSchema.statics.login = async function (email, password) {
     }
 }
 
-memberSchema.statics.create = async function ({ name, email, password, team, post = 'admin' }) {
+UserSchema.pre('save', async function (next) {
+    this.password = await hashingPassword(this.password);
+    next();
+});
 
-    try {
-        if (password.length >= 7) password = await hashingPassword(password);
+const User = mongoose.model("User", UserSchema);
 
-        const newMember = new this({ name, email, password, post, team });
-        await newMember.save();
-        
-        return newMember;
-    } catch (error) {
-        if (error.message.includes('email_1 dup key') && !error.errors) {
-            throw {
-                email: {
-                    message: 'The email you provided is already used.'
-                }
-            }
-        }
-        throw error.errors;
-    }
-}
-
-const Member = mongoose.model("Member", memberSchema);
-
-module.exports = Member;
+module.exports = User;

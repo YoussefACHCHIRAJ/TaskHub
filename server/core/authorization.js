@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const Team = require("../model/team");
-const Member = require("../model/member");
+const Team = require("../model/Team");
+const Member = require("../model/User");
 
 class authorization {
 
@@ -26,11 +26,11 @@ class authorization {
             if (error) {
                 return res.status(401).json({error: 'Authorization token failed.'})
             };
-            req.user = await Member.findOne({_id:decoded.id}).select('_id');
             next();
         });
     };
     static adminAuth(req, res, next) {
+      
         const {authorization} = req.headers;
         
         if (!authorization) return res.status(401).json({error: 'authorization token required.'})
@@ -41,7 +41,7 @@ class authorization {
             if (error) {
                 return res.status(403).json({error: 'forbidden'});
             };
-            if (decoded.post !== 'admin') return res.status(401).json({message: 'Unauthorized.'});
+            if (decoded.role !== 'leader') return res.status(401).json({message: 'Unauthorized.'});
             next();
         });
     }

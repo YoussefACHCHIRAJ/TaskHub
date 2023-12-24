@@ -2,12 +2,12 @@ import axios from "axios"
 import { useMutation } from "react-query"
 import useAuthContext from "./useAuthContext"
 
-const useStoreMember = (endpoint, { onSuccess }) => {
+const useStoreTask = ({onSuccess}) => {
     const { auth } = useAuthContext();
 
-    const query = useMutation(async (memberData) => {
+    const query = useMutation(async (taskData) => {
         try {
-            const response = await axios.post(endpoint, memberData, {
+            const response = await axios.post('http://localhost:3001/tasks/create', taskData, {
                 headers: {
                     "Authorization": `bearer ${auth.token}`
                 }
@@ -28,7 +28,5 @@ const useStoreMember = (endpoint, { onSuccess }) => {
     )
 
     return query;
-
 }
-
-export default useStoreMember
+export default useStoreTask;

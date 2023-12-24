@@ -12,6 +12,7 @@ import {
     Stack,
     Button,
 } from '@mui/material'
+import useAuthContext from '../../hooks/useAuthContext';
 import useStoreMember from '../../hooks/useStoreMember';
 import Iconify from '../iconify';
 
@@ -19,42 +20,37 @@ const AddMemberModel = ({
     openModal,
     setOpenModal,
     setOpenSnackbar,
-    setSnackbarMsg
+    setSnackbarMsg,
+    refetchMembers
 }) => {
+    const { auth } = useAuthContext();
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('Frontend');
-    const { error, isLoading, storeMember } = useStoreMember('http://localhost:3001/member/create')
-
+    const { isError, error, isLoading, mutate: storeMember, reset } = useStoreMember(`http://localhost:3001/member/create/${auth.user.team}`, {
+        onSuccess: () => {
+            setOpenModal(false);
+            setOpenSnackbar(true);
+            setSnackbarMsg('This member was add.');
+            refetchMembers();
+            setTimeout(() => {
+                setOpenSnackbar(false);
+            }, 2000);
+        }
+    })
     const cancel = () => {
         setName('');
         setEmail('');
         setPassword('');
-        setRole('Fronend');
-        setOpenModal(false)
+        setRole('Frontend');
+        setOpenModal(false);
+        reset();
     }
-
-    const submitStoreMember = async e => {
+    const submitStoreMember = e => {
         e.preventDefault();
-        const isMemberStored = await storeMember({ name, email, password: password.trim(), role });
-        if (isLoading) {
-            console.log('loding...');
-        } else {
-            console.log('loaded');
-            if (isMemberStored) {
-                setOpenModal(false);
-                setOpenSnackbar(true);
-                setSnackbarMsg('This member was add.');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } else {
-                console.log('error: ', error);
-
-            }
-        }
+        storeMember({ name, email, password: password.trim(), role });
     }
     return (
         <Modal open={openModal} onClose={() => setOpenModal(false)}>
@@ -69,8 +65,8 @@ const AddMemberModel = ({
                             variant="outlined"
                             fullWidth
                             required
-                            error={error && error.name}
-                            helperText={error ? error.name : ''}
+                            error={isError && error.name}
+                            helperText={isError ? error.name : ''}
                             FormHelperTextProps={{
                                 style: {
                                     color: '#f44336',
@@ -87,8 +83,8 @@ const AddMemberModel = ({
                             multiline
                             fullWidth
                             required
-                            error={error && error.email}
-                            helperText={error && error.email || ''}
+                            error={isError && error.email}
+                            helperText={isError && error.email || ''}
                             FormHelperTextProps={{
                                 style: {
                                     color: '#f44336',
@@ -99,8 +95,8 @@ const AddMemberModel = ({
                             name="password"
                             label="Password"
                             required
-                            error={error ? error.password : false}
-                            helperText={error ? error.password : ''}
+                            error={isError ? error.password : false}
+                            helperText={isError ? error.password : ''}
                             onChange={e => setPassword(e.target.value)}
                             type={showPassword ? 'text' : 'password'}
                             InputProps={{
@@ -129,7 +125,7 @@ const AddMemberModel = ({
                             </Select>
                         </FormControl>
 
-                        <Button className='bg-black hover:bg-gray-900' onClick={submitStoreMember} variant="contained">Add this Member</Button>
+                        <Button className='bg-black hover:bg-gray-900' onClick={submitStoreMember} variant="contained" disabled={isLoading}>Add this Member</Button>
                         <Button onClick={cancel}>Cancel</Button>
                     </Stack>
                 </Box>

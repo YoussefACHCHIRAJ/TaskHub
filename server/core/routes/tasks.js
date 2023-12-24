@@ -7,7 +7,7 @@ const storeUpdatedTask = require('../../controllers/tasks/storeUpdated');
 
 const router = express.Router();
 
-router.get("/",tasks);
+router.get("/:id",tasks);
 
 router.post("/create",authorization.adminAuth,createTask);
 

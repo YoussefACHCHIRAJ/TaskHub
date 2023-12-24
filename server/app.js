@@ -20,7 +20,7 @@ app.use(cors())
 /* ROUTES */
 
 
-app.get("/defaultInfo/:name", defaultInfo);
+app.get("/defaultInfo/:id", defaultInfo);
 app.use('/tasks',authorization.logedAuth,tasksRouter);
 app.use('/auth',authRouter);
 app.use("/member",authorization.logedAuth,memberRouter);

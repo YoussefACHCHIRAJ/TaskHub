@@ -1,30 +1,39 @@
+const { default: mongoose } = require("mongoose");
 const { decodeToken } = require("../core/functions");
-const Tasks = require("../model/tasks");
-const Team = require("../model/team");
+const Team = require("../model/Team");
+const UserTask = require("../model/UserTask");
+const Task = require("../model/Task");
+const User = require("../model/User");
 
 const defaultInfo = async (req, res) => {
-    const {name} = req.params
+    const { id } = req.params
     try {
-        const { authorization } = req.headers;
 
-        if (!authorization) throw { authorization: { message: "The Token is required." } }
+        const _id = new mongoose.Types.ObjectId(id);
 
-        const token = authorization.split(' ')[1];
+        const { team } = await User.findById(_id).select('team');
+        const tasks = await Task.find({ team });
+        const teamMembersCount = await User.countDocuments({ team });
+        const authUserTaskCount = await UserTask.countDocuments({user: _id});
+        const tasksCount = tasks.length;
+        // console.log({ tasks, team, teamMember });
+        // const { authorization } = req.headers;
 
-        const decodedToken = await decodeToken(token);
+        // if (!authorization) throw { authorization: { message: "The Token is required." } }
 
-        const team = await Team.findOne({ name: decodedToken.team });
+        // const token = authorization.split(' ')[1];
 
-        const tasks = await Promise.all(team?.tasks?.map(async task => {
-            return await Tasks.findById(task);
-        }));
+        // const decodedToken = await decodeToken(token);
 
-        const userTasks = tasks.filter(task => task.responsables.includes(name));
+        // const team = await Team.findOne({ name: decodedToken.team });
 
-        const memberNumber = team.members.length;
-        const tasksNumber = team.tasks.length;
-        const userTasksNumber = userTasks.length;
-        res.status(200).json({ memberNumber, tasksNumber, userTasksNumber, tasks: tasks.reverse() });
+        // const tasks = await Promise.all(team?.tasks?.map(async task => {
+        //     return await Tasks.findById(task);
+        // }));
+
+        // const userTasks = tasks.filter(task => task.responsables.includes(name));
+
+        res.status(200).json({ tasksCount, teamMembersCount, authUserTaskCount, tasks });
     } catch (error) {
         console.log(error);
         res.status(400).json({ error });

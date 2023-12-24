@@ -12,26 +12,13 @@ import useAuthContext from "../../../hooks/useAuthContext";
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const {logout} = useLogout();
-  const { user } = useAuthContext();
-    
-  const handleOpen = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setOpen(null);
-  };
-
-  const logedout = () =>{
-    logout();
-  }
-  
+  const { logout } = useLogout();
+  const { auth } = useAuthContext();
 
   return (
     <>
       <IconButton
-        onClick={handleOpen}
+        onClick={(event) => setOpen(event.currentTarget)}
         sx={{
           p: 0,
           ...(open && {
@@ -53,7 +40,7 @@ export default function AccountPopover() {
       <Popover
         open={Boolean(open)}
         anchorEl={open}
-        onClose={handleClose}
+        onClose={() => setOpen(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         PaperProps={{
@@ -71,25 +58,25 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user? user.member.name : 'Ghost'}
+            {auth ? auth.user.name : 'Ghost'}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user? user.member.email: "Ghost"}
+            {auth ? auth.user.email : "Ghost"}
           </Typography>
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
-          <MenuItem onClick={handleClose} component={Link} to='/dashboard/profile'>
+          <MenuItem onClick={() => setOpen(null)} component={Link} to='/dashboard/profile'>
             Profile
           </MenuItem>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        
-        <MenuItem onClick={logedout} sx={{ m: 1 }} component={Link} to='/login'>
+
+        <MenuItem onClick={logout} sx={{ m: 1 }} component={Link} to='/login'>
           Logout
         </MenuItem>
       </Popover>

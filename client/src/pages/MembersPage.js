@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useState } from 'react';
 // @mui
 import {
   Card,
@@ -20,8 +20,6 @@ import {
   Alert,
   AlertTitle,
   IconButton,
-  Popover,
-  MenuItem,
   Snackbar,
 } from '@mui/material';
 // hooks
@@ -41,7 +39,6 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
-  { id: 'team', label: 'Team', alignRight: false },
   { id: 'actions', label: ' ', alignRight: false },
 ];
 
@@ -77,10 +74,11 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function MembersPage() {
-  const { user } = useAuthContext();
+  const { auth } = useAuthContext();
 
 
-  const { error, isLoading, members } = useGetMembers('http://localhost:3001/member');
+  const { error, isLoading, data: members, refetch: refetchMembers } = useGetMembers();
+
 
   const [page, setPage] = useState(0);
 
@@ -106,14 +104,13 @@ export default function MembersPage() {
 
 
   let users = []
-  console.log('members: ', members);
 
   if (!isLoading) {
     users = members?.map((member) => ({
       id: member._id,
       name: member.name,
       email: member.email,
-      role: member.post,
+      role: member.role,
       team: member.team,
     })) || [];
   }
@@ -172,7 +169,7 @@ export default function MembersPage() {
           <Typography variant="h4" gutterBottom>
             Members
           </Typography>
-          {user.member.post.toLowerCase() === 'admin' &&
+          {auth.user.role.toLowerCase() === 'leader' &&
             (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
               New Member
             </Button>)}
@@ -183,6 +180,7 @@ export default function MembersPage() {
           setOpenModal={setOpenModal}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
+          refetchMembers={refetchMembers}
         />
 
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
@@ -202,13 +200,13 @@ export default function MembersPage() {
                     <UserListHead
                       order={order}
                       orderBy={orderBy}
-                      headLabel={user?.member?.post.toLowerCase() === 'admin' ? TABLE_HEAD : TABLE_HEAD.slice(0, -1)}
+                      headLabel={auth.user?.role.toLowerCase() === 'leader' ? TABLE_HEAD : TABLE_HEAD.slice(0, -1)}
                       rowCount={users.length}
                       onRequestSort={handleRequestSort}
                     />
                     <TableBody>
                       {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                        const { id, name, role, team, email } = row;
+                        const { id, name, role, email } = row;
 
                         return (
                           <TableRow hover key={id} tabIndex={-1}>
@@ -217,7 +215,7 @@ export default function MembersPage() {
                             <TableCell component="th" scope="row" padding="none">
                               <Stack direction="row" alignItems="center" spacing={2} sx={{ paddingLeft: '4px' }}>
                                 <Typography variant="subtitle2" noWrap>
-                                  {name}{user.member.name === name && " (You)"}
+                                  {name}{auth.user.name === name && " (You)"}
                                 </Typography>
                               </Stack>
                             </TableCell>
@@ -225,9 +223,7 @@ export default function MembersPage() {
                             <TableCell align="left">{email}</TableCell>
 
                             <TableCell align="left">{role}</TableCell>
-
-                            <TableCell align="left">{team}</TableCell>
-                            {user.member.post.toLowerCase() === 'admin' && user.member.email !== email && (<TableCell align="center">
+                            {auth.user.role.toLowerCase() === 'leader' && auth.user.email !== email && (<TableCell align="center">
                               <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, id)}>
                                 <Iconify icon={'eva:more-vertical-fill'} />
                               </IconButton>

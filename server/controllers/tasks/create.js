@@ -1,33 +1,23 @@
-const { decodeToken } = require("../../core/functions");
+const { default: mongoose } = require("mongoose");
 const HandleErrors = require("../../core/handleErrors");
-const Tasks = require("../../model/tasks");
-const Team = require("../../model/team");
+const Task = require("../../model/Task");
+const UserTask = require("../../model/UserTask");
 
 const createTask = async (req, res) => {
-    const { title, description, dateStart, deadline, responsables } = req.body;
+    const { title, description, dateStart, deadline, teamId, responsables } = req.body;
+    console.log({ title, description, dateStart, deadline, teamId, responsables });
     try {
-        const { authorization } = req.headers;
-
-        if (!authorization) throw {authorization: {message: "The Token is required."}}
-
-        const token = authorization.split(' ')[1];
-
-        const decodedToken = await decodeToken(token);
-
-        const team = await Team.findOne({ name: decodedToken.team });
-
-        const newTask = new Tasks({ title, description, dateStart, deadline, responsables, teamId: team._id, adminId: decodedToken.id });
-
-        team.tasks.push(newTask._id);
-
-        await newTask.save();
-        await team.save();
-
+        const team = new mongoose.Types.ObjectId(teamId);
+        const newTask = await Task.create({ title, description, dateStart, deadline, team });
+        await Promise.all(responsables.map(async responsible => {
+            const userId = new mongoose.Types.ObjectId(responsible);
+            await UserTask.create({ user: userId, task: newTask._id });
+        }))
         res.status(201).json(newTask)
 
     } catch (err) {
         const error = HandleErrors.tasksErrors(err.errors);
-        res.status(500).json({ error });
+        res.status(500).json(error);
     }
 }
 

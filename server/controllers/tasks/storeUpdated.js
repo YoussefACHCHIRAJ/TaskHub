@@ -1,4 +1,4 @@
-const Tasks = require("../../model/tasks");
+const Tasks = require("../../model/Task");
 
 const storeUpdatedTask = async (req, res) => {
     const id = req.params.id;

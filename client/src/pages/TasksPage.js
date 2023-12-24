@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 
 import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel } from '../components/models';
-import { useGetTasks } from '../hooks/useGetTasks';
+import useGetTasks from '../hooks/useGetTasks';
 import { fDate } from '../utils/formatTime';
 
 import Scrollbar from '../components/scrollbar';
@@ -35,28 +35,22 @@ import CategorizeTasksModale from '../components/models/categorize-tasks-model';
 
 
 
-function createData(id, title, start, due, description, responsables, categorize) {
+function createData(id, title, start, due, description, responsibleUsers, categorize) {
   return {
     id,
     title,
     start,
     due,
     description,
-    responsables,
+    responsibleUsers,
     categorize
   };
 }
 
 
 export default function TaskPage() {
-  const { user } = useAuthContext();
-
-
+  const { auth } = useAuthContext();
   const [taskSelected, setTaskSelected] = React.useState(null);
-
-
-  const { tasks, teamMembers, error, isLoading } = useGetTasks('http://localhost:3001/tasks/');
-
   const [open, setOpen] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
@@ -66,15 +60,17 @@ export default function TaskPage() {
   const [members, setMembers] = React.useState([]);
   const [snackbarMsg, setSnackbarMsg] = React.useState('');
   const [categorize, setCategorize] = React.useState('All');
+  
+  const { data, error, isLoading, isError, refetch:reftechTasksData } = useGetTasks();
 
   React.useEffect(() => {
-    if (!isLoading && tasks) {
-      const newRows = tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsables, categorize));
+    if (!isLoading && data) {
+      const newRows = data.tasks && data.tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers, categorize));
       setRows(newRows);
-      const newMembers = teamMembers.map(member => ({ id: member._id, name: member.name }));
+      const newMembers = data.teamMembers && data.teamMembers.map(member => ({ id: member._id, name: member.name }));
       setMembers(newMembers);
     }
-  }, [isLoading, tasks, teamMembers, categorize]);
+  }, [isLoading, data, categorize]);
 
   const handleOpenMenu = (event, taskId) => {
     setTaskSelected(taskId);
@@ -89,7 +85,7 @@ export default function TaskPage() {
 
   if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 
-  if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+  if (isError) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
     <Alert severity="error">
       <AlertTitle>error</AlertTitle>
       {error.message}<br />
@@ -111,7 +107,7 @@ export default function TaskPage() {
           </Typography>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
-            {user.member.post.toLowerCase() === 'admin' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
+            {auth.user.role.toLowerCase() === 'leader' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
               New Task
             </Button>)}
           </Stack>
@@ -123,8 +119,9 @@ export default function TaskPage() {
           members={members}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
+          reftechTasksData={reftechTasksData}
         />
-        <DeleteTaskModel
+        {/* <DeleteTaskModel
           deleteConfirmationOpen={deleteConfirmationOpen}
           setDeleteConfirmationOpen={setDeleteConfirmationOpen}
           taskSelected={taskSelected}
@@ -140,7 +137,7 @@ export default function TaskPage() {
           setSnackbarMsg={setSnackbarMsg}
           taskSelected={taskSelected}
           tasks={rows}
-        />
+        /> */}
 
 
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
@@ -161,7 +158,7 @@ export default function TaskPage() {
                         <TableCell align="center">Start</TableCell>
                         <TableCell align="center">Due</TableCell>
                         <TableCell align="center">Status</TableCell>
-                        {user.member.post.toLowerCase() === 'admin' && (<TableCell align="center"> </TableCell>)}
+                        {auth.user.role.toLowerCase() === 'leader' && (<TableCell align="center"> </TableCell>)}
                       </TableRow>
                     </TableHead>
                     <TableBody>

@@ -60,7 +60,7 @@ export default function LoginPage() {
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Don't have an account? {''}
+              Don&apos;t have an account? {''}
                 <Link to='/register' className='text-blue-600 font-semibold'>Get started</Link>
             </Typography>
 

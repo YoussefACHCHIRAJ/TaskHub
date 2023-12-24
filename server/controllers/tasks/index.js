@@ -1,25 +1,60 @@
-const { decodeToken } = require("../../core/functions");
-const Tasks = require("../../model/tasks");
-const Team = require("../../model/team");
+const { default: mongoose } = require("mongoose");
+const User = require("../../model/User");
+const Task = require("../../model/Task");
 
 const tasks = async (req, res) => {
+
     try {
-        const {authorization} = req.headers;
+        const id = new mongoose.Types.ObjectId(req.params.id);
+        const { team } = await User.findById(id).select("team");
 
-        if(!authorization) throw {authorization: {message: "The Token is required."}}
-
-        const token = authorization.split(' ')[1];
-        
-        const decodedToken = await decodeToken(token);
-
-        const team = await Team.findOne({ name: decodedToken.team });
-
-        if (!team) throw {taskError: {message: "The team is required. Pleaze create a team."}}
-
-        const tasks = await Tasks.find({ teamId: team._id });
-        
-        const teamMembers = await Team.getMembers(team);
-
+        const tasks = await Task.aggregate([
+            {
+                $match: { team } // Match tasks by team ID
+            },
+            {
+                $lookup: {
+                    from: 'usertasks',
+                    localField: '_id',
+                    foreignField: 'task',
+                    as: 'userTasks' // Store user tasks associated with the task
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { responsibleUsers: '$userTasks.user' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $in: ['$_id', '$$responsibleUsers']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                name: 1 // Select only the 'name' field
+                            }
+                        }
+                    ],
+                    as: 'responsibleUsers' // Store the projected 'name' field in responsibleUsers
+                }
+            },
+            {
+                $group: {
+                    _id: '$_id',
+                    title: { $first: '$title' },
+                    description: { $first: '$description' },
+                    dateStart: { $first: '$dateStart' },
+                    deadline: { $first: '$deadline' },
+                    responsibleUsers: { $first: '$responsibleUsers' } // Collect responsible users in an array
+                }
+            }
+        ]);
+        const teamMembers = await User.find({ team }).select("name");
+        console.log({ tasks });
         res.status(200).json({ tasks, teamMembers });
 
     } catch (error) {

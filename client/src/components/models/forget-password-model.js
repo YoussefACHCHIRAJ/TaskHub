@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react'
 import {
     Button,
@@ -14,7 +15,7 @@ const ForgetPasswordModel = ({ open, setOpen }) => (
             <DialogContent>
                 <DialogContentText>
                     Take a moment to relax and catch your breath before attempting to recall your password. 
-                    If you can't remember it right away, give it another try.
+                    If you can&apos;t remember it right away, give it another try.
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

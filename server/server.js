@@ -9,6 +9,7 @@ const PORT = process.env.PORT;
 /* data base connect */
 mongoose.connect(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(res => {
+        console.log('connected successfully');
         console.log(`server running on port ${PORT}` )
         app.listen(PORT)
     })

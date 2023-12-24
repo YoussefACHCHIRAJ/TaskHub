@@ -28,7 +28,7 @@ export const useLogin = () => {
                 return false;
             }
 
-            localStorage.setItem('user', JSON.stringify(result));
+            localStorage.setItem('auth', JSON.stringify(result));
             setError(false);
             dispatch({ type: 'login', payload: result });
             setIsLoading(false);

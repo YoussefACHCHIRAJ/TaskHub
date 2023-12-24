@@ -6,9 +6,9 @@ const authReducer = (state, action) => {
 
     switch (action.type) {
         case 'login':
-            return { user: action.payload };
+            return { auth: action.payload };
         case 'logout':
-            return { user: null };
+            return { auth: null };
         default:
             return state;
     }
@@ -16,7 +16,7 @@ const authReducer = (state, action) => {
 
 export const AuthContextProvider = (props) => {
     const [state, dispatch] = useReducer(authReducer, {
-        user: JSON.parse(localStorage.getItem('user')) || null
+        auth: JSON.parse(localStorage.getItem('auth')) || null
     });
 
     console.log('authContext state: ', state)

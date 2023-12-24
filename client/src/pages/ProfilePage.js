@@ -1,5 +1,5 @@
 import React from 'react'
-import { Avatar, Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { Helmet } from 'react-helmet-async'
 import useAuthContext from '../hooks/useAuthContext'
 import Iconify from '../components/iconify'
@@ -13,7 +13,7 @@ const ProfilePage = () => {
             </Helmet>
             <Container>
 
-                <Stack  direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h3" gutterBottom>
                         Your Profile
                     </Typography>

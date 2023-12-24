@@ -1,40 +1,26 @@
-import { useEffect, useState } from 'react'
-import useAuthContext from './useAuthContext';
+import { useQuery } from "react-query"
+import axios from "axios";
+import useAuthContext from "./useAuthContext";
 
-const useGetMembers = (endpoint) => {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [members, setMembers] = useState(null);
-    const { user } = useAuthContext()
+const useGetMembers = () => {
+    const { auth } = useAuthContext();
 
-    useEffect(() => {
-        const getMembers = async () => {
+    const query = useQuery({
+        queryKey: ["getMembers"],
+        queryFn : async () => {
             try {
-                setIsLoading(true);
-                const response = await fetch(endpoint,{
-                    headers: { 'authorization': `bearer ${user.token}` }
+                const { data } = await axios.get(`http://localhost:3001/member/${auth.user._id}`,{
+                    headers: { 'authorization': `bearer ${auth.token}` }
                 });
-
-                const result = await response.json();
-
-                if(result.error){
-                    setIsLoading(false);
-                    setError(result.error);
-                    return;
-                }
-                setIsLoading(false);
-                setError(null);
-                setMembers(result);
-
+                return data.members;
             } catch (error) {
-                setIsLoading(false);
-                setError(error);
+                throw new Error(`Failed load members. ${error}`);
             }
         }
-        getMembers();
-    }, [endpoint, user.token]);
+    });
 
-    return {  error, isLoading, members};
+    return query;
+    
 }
 
 export default useGetMembers

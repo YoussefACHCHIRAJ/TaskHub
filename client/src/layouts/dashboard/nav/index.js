@@ -37,7 +37,7 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
-  const { user } = useAuthContext();
+  const { auth } = useAuthContext();
 
   const isDesktop = useResponsive('up', 'lg');
 
@@ -66,7 +66,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {user? user.member.name : "Ghost"}
+                {auth? auth.user.name : "Ghost"}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>

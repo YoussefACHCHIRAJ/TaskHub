@@ -18,7 +18,7 @@ import {
     AlertTitle,
 } from '@mui/material';
 
-import { useGetTasks } from '../hooks/useGetTasks';
+import useGetTasks from '../hooks/useGetTasks';
 import { fDate } from '../utils/formatTime';
 
 import Scrollbar from '../components/scrollbar';
