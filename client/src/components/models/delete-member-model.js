@@ -8,29 +8,29 @@ import {
     DialogContentText,
     DialogActions,
 } from '@mui/material'
-import useDeleteTask from '../../hooks/useDeleteTask';
+import useDeleteMember from '../../hooks/useDeleteMember';
 
-const DeleteTaskModel = ({
+const DeleteMemberModal = ({
     deleteConfirmationOpen,
     setDeleteConfirmationOpen,
-    taskSelected,
+    memberSelected,
     setOpenSnackbar,
     setSnackbarMsg,
-    refetchTasks,
+    refetchMembers,
 }) => {
-    const { isError,error, isLoading, mutate:deleteTask } = useDeleteTask({
+    const { isError,error, isLoading, mutate:deleteMember } = useDeleteMember({
         onSuccess: () => {
             setOpenSnackbar(true);
-            setSnackbarMsg('This task was deleted.')
+            setSnackbarMsg('This member was deleted.')
             setDeleteConfirmationOpen(false);
-            refetchTasks()
+            refetchMembers()
             setTimeout(() => {
                 setOpenSnackbar(false);
             }, 1500);
         }
     });
     const submitDeleteTask = async () => {
-        deleteTask(taskSelected?.id);
+        deleteMember(memberSelected?.id);
             
     }
     return (
@@ -38,7 +38,8 @@ const DeleteTaskModel = ({
             <DialogTitle>Delete Task</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Are you sure you want to delete this task?
+                    Are you sure you want to remove <span className='font-bold'>{ memberSelected?.name }</span> from your team?
+                    This member's account will be deleted for ever.
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -54,4 +55,4 @@ const DeleteTaskModel = ({
     )
 }
 
-export default DeleteTaskModel
+export default DeleteMemberModal

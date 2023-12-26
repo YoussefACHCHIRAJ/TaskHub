@@ -5,7 +5,7 @@ import { Box, Button, FormControl, InputLabel, MenuItem, Modal, OutlinedInput, S
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useTheme } from '@mui/material/styles';
-// import { useStoreNewTask } from '../../hooks/useStoreNewTask';
+import useUpdateTask from '../../hooks/useUpdateTask';
 import useAuthContext from '../../hooks/useAuthContext';
 
 
@@ -24,7 +24,7 @@ const MenuProps = {
 function getStyles(member, responsables, theme) {
     return {
         fontWeight:
-            responsables.indexOf(member) === -1
+            responsables?.indexOf(member) === -1
                 ? theme.typography.fontWeightRegular
                 : theme.typography.fontWeightMedium,
     };
@@ -37,10 +37,11 @@ const UpdateTaskModel = ({
     setOpenSnackbar,
     setSnackbarMsg,
     taskSelected,
+    refetchTasks,
     tasks
 }) => {
     const theme = useTheme();
-    const { user } = useAuthContext()
+    const { auth } = useAuthContext()
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -49,7 +50,17 @@ const UpdateTaskModel = ({
 
     const [responsables, setResponsables] = useState([]);
 
-    // const { error, isLoading, storeNewTask } = useStoreNewTask(`http://localhost:3001/tasks/update/${taskSelected}`);
+    const { isError, error, isLoading, mutate: storeNewTask, reset } = useUpdateTask({
+        onSuccess: () => {
+            handleCloseModal();
+            setOpenSnackbar(true);
+            setSnackbarMsg('This task was updated.');
+            refetchTasks();
+            setTimeout(() => {
+                setOpenSnackbar(false);
+            }, 1500);
+        }
+    });
 
     const handleChangeResponsables = (event) => {
         const {
@@ -64,40 +75,28 @@ const UpdateTaskModel = ({
         setDateStart('');
         setDeadline('');
         setResponsables([]);
-
+        reset()
         setOpenUpdate(false);
     };
 
-    console.log('update: ', taskSelected);
 
-    const submitTasks = async e => {
-        e.preventDefault();
-        // const responsablesArray = responsables.length > 0 ? responsables : null;
-        // const isTaskAdd = await storeNewTask(
-        //     { title, description, dateStart, deadline, responsables: responsablesArray });
+    const submitTasks = event => {
+        event.preventDefault();
+        const responsablesArray = responsables?.length > 0 ? responsables : null;
+        const updatedTask = { title, description, dateStart, deadline, responsables: responsablesArray };
+        storeNewTask({taskId: taskSelected.id, updatedTask});
 
-        // if (isTaskAdd) {
-        //     handleCloseModal();
-        //     setOpenSnackbar(true);
-        //     setSnackbarMsg('This task was updated.');
-        //     if (!isLoading) {
-        //         setTimeout(() => {
-        //             window.location.reload();
-        //         }, 1500);
-        //     }
-        // }
     }
     useEffect(() => {
         if (taskSelected) {
-            const taskSelectedToUpdate = tasks.find(task => task.id === taskSelected) || {};
-            const { title, description, dateStart, deadline, responsables } = taskSelectedToUpdate;
+            const { title, description, dateStart, deadline, responsibleUsers } = taskSelected;
             setTitle(title);
             setDescription(description);
             setDateStart(dateStart);
             setDeadline(deadline);
-            setResponsables(responsables);
+            setResponsables(responsibleUsers?.map(respo => respo._id));
         }
-    }, [ taskSelected, tasks]);
+    }, [taskSelected, tasks]);
     return (
         <Modal open={openUpdate} onClose={handleCloseModal}>
             <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
@@ -106,8 +105,8 @@ const UpdateTaskModel = ({
                     <Stack spacing={2}>
                         <TextField
                             onChange={e => setTitle(e.target.value)}
-                            // // helperText={error ? error.title : ''}
-                            // // // error={error && error.title}
+                            helperText={isError ? error.title : ''}
+                            error={isError && error.title}
                             required
                             id="outlined-basic"
                             label="Task title"
@@ -122,8 +121,8 @@ const UpdateTaskModel = ({
                         />
                         <TextField
                             onChange={e => setDescription(e.target.value)}
-                            // // helperText={error ? error.description : ''}
-                            // // // error={error && error.description}
+                            helperText={isError ? error.description : ''}
+                            error={isError && error.description}
                             required
                             defaultValue={description}
                             id="outlined-multiline-flexible"
@@ -148,7 +147,7 @@ const UpdateTaskModel = ({
                                         minDate={today}
                                         slotProps={{
                                             textField: {
-                                                // // helperText: error ? error.dateStart : '',
+                                                helperText: isError ? error.dateStart : '',
                                             },
                                             tabs: {
                                                 color: 'red'
@@ -164,10 +163,10 @@ const UpdateTaskModel = ({
                                         value={dayjs(deadline)}
                                         disabled={dateStart === null}
                                         minDate={dayjs(dateStart)}
-                                        // error
+                                        error
                                         slotProps={{
                                             textField: {
-                                                // // helperText: error ? error.deadline : '',
+                                                helperText: isError ? error.deadline : '',
                                             },
 
                                         }}
@@ -178,7 +177,7 @@ const UpdateTaskModel = ({
 
                         <FormControl
                             sx={{ m: 1, width: '100%' }}
-                            // // // error={error && error.responsables}
+                            error={error && error.responsables}
                             required>
                             <InputLabel id="demo-multiple-name-label">Responsables</InputLabel>
 
@@ -193,13 +192,13 @@ const UpdateTaskModel = ({
                             >
 
                                 {members.map((member) => {
-                                    const memberName = member.name === user.member.name
+                                    const memberName = member.name === auth.user.name
                                         ? `${member.name} (You)`
                                         : member.name;
                                     return (
                                         <MenuItem
                                             key={member.id}
-                                            value={member.name}
+                                            value={member.id}
                                             style={getStyles(member, responsables, theme)}
                                         >
                                             {memberName}
@@ -208,11 +207,11 @@ const UpdateTaskModel = ({
                                 })}
 
                             </Select>
-                            {/* {/* {/* {/* {error && error.responsables && (<Typography className='block sm:px-4' variant='caption' color='error'>{error.responsables}</Typography>)} */} */} */} */}
+                            {error && error.responsables && (<Typography className='block sm:px-4' variant='caption' color='error'>{error.responsables}</Typography>)}
 
                         </FormControl>
 
-                        <Button className='bg-black hover:bg-gray-900'  variant="contained" onClick={submitTasks}>Update this task</Button>
+                        <Button className='bg-black hover:bg-gray-900' variant="contained" onClick={submitTasks} disabled={isLoading}>Update this task</Button>
                         <Button onClick={handleCloseModal}>Cancel</Button>
                     </Stack>
                 </Box>

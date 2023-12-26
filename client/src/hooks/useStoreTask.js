@@ -7,20 +7,14 @@ const useStoreTask = ({onSuccess}) => {
 
     const query = useMutation(async (taskData) => {
         try {
-            const response = await axios.post('http://localhost:3001/tasks/create', taskData, {
+            await axios.post('http://localhost:3001/tasks/create', taskData, {
                 headers: {
                     "Authorization": `bearer ${auth.token}`
                 }
             });
-            console.log(response);
             onSuccess()
             return true;
         } catch (error) {
-            console.log({ error: Object.keys(error.response) });
-            console.log({
-                message: error,
-                code: error.code,
-            })
             throw error.response.data;
         }
     },

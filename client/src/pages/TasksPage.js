@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import {
@@ -50,32 +50,31 @@ function createData(id, title, start, due, description, responsibleUsers, catego
 
 export default function TaskPage() {
   const { auth } = useAuthContext();
-  const [taskSelected, setTaskSelected] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
-  const [openUpdate, setOpenUpdate] = React.useState(false);
-  const [openModal, setOpenModal] = React.useState(false);
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = React.useState(false);
-  const [rows, setRows] = React.useState([]);
-  const [members, setMembers] = React.useState([]);
-  const [snackbarMsg, setSnackbarMsg] = React.useState('');
-  const [categorize, setCategorize] = React.useState('All');
+  const [taskSelected, setTaskSelected] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [snackbarMsg, setSnackbarMsg] = useState('');
+  const [categorize, setCategorize] = useState('All');
   
   const { data, error, isLoading, isError, refetch:reftechTasksData } = useGetTasks();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && data) {
-      const newRows = data.tasks && data.tasks.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers, categorize));
+      const newRows = data?.tasks && data?.tasks?.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers, categorize));
       setRows(newRows);
-      const newMembers = data.teamMembers && data.teamMembers.map(member => ({ id: member._id, name: member.name }));
+      const newMembers = data?.teamMembers && data.teamMembers.map(member => ({ id: member._id, name: member.name }));
       setMembers(newMembers);
     }
   }, [isLoading, data, categorize]);
 
-  const handleOpenMenu = (event, taskId) => {
-    setTaskSelected(taskId);
+  const handleOpenMenu = (event, task) => {
+    setTaskSelected(task);
     setOpen(event.currentTarget);
-    console.log('three point:', taskSelected)
   };
 
   const handleCloseMenu = () => {
@@ -121,12 +120,13 @@ export default function TaskPage() {
           setSnackbarMsg={setSnackbarMsg}
           reftechTasksData={reftechTasksData}
         />
-        {/* <DeleteTaskModel
+        <DeleteTaskModel
           deleteConfirmationOpen={deleteConfirmationOpen}
           setDeleteConfirmationOpen={setDeleteConfirmationOpen}
           taskSelected={taskSelected}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
+          refetchTasks={reftechTasksData}
         />
 
         <UpdateTaskModel
@@ -137,7 +137,8 @@ export default function TaskPage() {
           setSnackbarMsg={setSnackbarMsg}
           taskSelected={taskSelected}
           tasks={rows}
-        /> */}
+          refetchTasks={reftechTasksData}
+        />
 
 
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
@@ -192,11 +193,11 @@ export default function TaskPage() {
           },
         }}
       >
-        <MenuItem sx={{ color: 'error.main' }} onClick={() => setDeleteConfirmationOpen(true)} >
+        <MenuItem sx={{ color: 'error.main' }} onClick={() => {setDeleteConfirmationOpen(true); setOpen(false)}} >
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete task
         </MenuItem>
-        <MenuItem sx={{ color: 'success.main' }} onClick={() => setOpenUpdate(true)} >
+        <MenuItem sx={{ color: 'success.main' }} onClick={() => {setOpenUpdate(true); setOpen(false)}} >
           <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
           Update task
         </MenuItem>

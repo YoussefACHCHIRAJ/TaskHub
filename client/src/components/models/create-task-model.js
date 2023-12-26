@@ -39,7 +39,6 @@ const CreateTaskModel = ({
 }) => {
     const theme = useTheme();
     const { auth } = useAuthContext()
-    console.log({ members });
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dateStart, setDateStart] = useState('');
@@ -72,12 +71,12 @@ const CreateTaskModel = ({
         setDateStart('');
         setDeadline('');
         setResponsables([]);
-
+        reset();
         setOpenModal(false);
     };
 
-    const submitTasks = async e => {
-        e.preventDefault();
+    const submitTasks = event => {
+        event.preventDefault();
         const responsablesArray = responsables.length > 0 ? responsables : null;
         storeNewTask(
             { title, description, dateStart, deadline, responsables: responsablesArray, teamId: auth.user.team });
@@ -85,7 +84,7 @@ const CreateTaskModel = ({
     }
     return (
         <Modal open={openModal} onClose={handleCloseModal}>
-            <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
+            <Box sx={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
                 <Typography variant='h4' gutterBottom >Add New task</Typography>
                 <Box component='form'>
                     <Stack spacing={2}>
@@ -131,10 +130,12 @@ const CreateTaskModel = ({
                                         slotProps={{
                                             textField: {
                                                 helperText: error ? error.dateStart : '',
+                                                FormHelperTextProps: {
+                                                    sx: {
+                                                        color: 'red', // Change this to your desired color
+                                                    },
+                                                },
                                             },
-                                            tabs: {
-                                                color: 'red'
-                                            }
                                         }}
                                     />
 
@@ -143,14 +144,18 @@ const CreateTaskModel = ({
                                     <DatePicker
                                         onChange={date => setDeadline(date)}
                                         label='deadline *'
-                                        disabled={dateStart === null}
+                                        disabled={!dateStart}
                                         minDate={dayjs(dateStart)}
                                         error
                                         slotProps={{
                                             textField: {
-                                                helperText: error ? error.deadline : '',
+                                                helperText: error ? error.dateStart : '',
+                                                FormHelperTextProps: {
+                                                    sx: {
+                                                        color: 'red', // Change this to your desired color
+                                                    },
+                                                },
                                             },
-
                                         }}
                                     />
                                 </div>

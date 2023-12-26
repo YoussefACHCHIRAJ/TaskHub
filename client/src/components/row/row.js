@@ -51,7 +51,7 @@ const Row = ({ row, handleOpenMenu, options }) => {
                     </Typography>
                 </TableCell>
                 {auth.user.role.toLowerCase() === 'leader' && options && (<TableCell align="center">
-                    <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row.id)}>
+                    <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row)}>
                         <Iconify icon={'eva:more-vertical-fill'} />
                     </IconButton>
                 </TableCell>)}

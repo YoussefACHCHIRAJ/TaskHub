@@ -48,8 +48,8 @@ const AddMemberModel = ({
         setOpenModal(false);
         reset();
     }
-    const submitStoreMember = e => {
-        e.preventDefault();
+    const submitStoreMember = event => {
+        event.preventDefault();
         storeMember({ name, email, password: password.trim(), role });
     }
     return (
