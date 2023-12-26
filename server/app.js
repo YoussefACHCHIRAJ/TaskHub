@@ -3,7 +3,7 @@ const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const tasksRouter = require('./core/routes/tasks.js');
 const authRouter = require('./core/routes/auth.js');
-const memberRouter = require('./core/routes/member.js');
+const memberRouter = require('./core/routes/user.js');
 const profileRouter = require('./core/routes/profile.js');
 
 const authorization = require('./core/authorization.js');

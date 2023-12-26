@@ -1,16 +1,27 @@
-const Tasks = require("../../model/tasks");
+const { default: mongoose } = require("mongoose");
+const Task = require("../../model/Task");
+const UserTask = require("../../model/UserTask");
 
 const updateTask = async (req, res) => {
-    const id = req.params.id;
     try {
-        const tasks = await Tasks.findById(id);
-        
-        if(!tasks) throw new Error(`there is not tasks`);
+        const id = new mongoose.Types.ObjectId(req.params.id);
+        const { title, description, dateStart, deadline, responsables } = req.body;
+        console.log({ responsables: req.body })
+        await Task.findByIdAndUpdate(id, { title, description, dateStart, deadline });
 
-        res.status(200).render("tasks/update",{tasks})
+        await Promise.all(responsables.map(async respo => {
+            const isResponsibleExist = await UserTask.exists({ user: respo });
+            if (!isResponsibleExist) {
+                await UserTask.create({ task: id, user: respo });
+            }
+        }));
+
+        await UserTask.deleteMany({ user: { $nin: responsables } });
+        console.log("task updated");
+        res.status(200).json({})
     } catch (error) {
-        console.table(error)
-        res.status(503).json({error: error.message});
+        console.log({ error })
+        res.status(400).json({ error: error.message });
     }
 }
 

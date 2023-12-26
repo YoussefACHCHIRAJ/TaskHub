@@ -34,7 +34,7 @@ const tasks = async (req, res) => {
                         },
                         {
                             $project: {
-                                _id: 0,
+                                _id: 1,
                                 name: 1 // Select only the 'name' field
                             }
                         }
@@ -54,7 +54,6 @@ const tasks = async (req, res) => {
             }
         ]);
         const teamMembers = await User.find({ team }).select("name");
-        console.log({ tasks });
         res.status(200).json({ tasks, teamMembers });
 
     } catch (error) {

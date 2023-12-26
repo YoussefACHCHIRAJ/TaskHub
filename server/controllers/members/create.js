@@ -5,8 +5,9 @@ const User = require("../../model/User");
 const create = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
-        const teamId = req.params.teamId;
-        const team = new mongoose.Types.ObjectId(teamId);
+
+        const team = new mongoose.Types.ObjectId(req.params.teamId);
+
         const newMember = await User.create({ name, email, password, role, team });
 
         res.status(201).json(newMember);
