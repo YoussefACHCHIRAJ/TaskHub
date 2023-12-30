@@ -8,7 +8,8 @@ const UserSchema = new Schema({
     name: {
         type: String,
         required: [true, "Pleaze provide a valid name"],
-        trim: [true, "Provide a valid name"]
+        unique: [true, "This name already exist."],
+        trim: [true, "Provide a valid name"],
     },
     email: {
         type: String,
@@ -29,6 +30,7 @@ const UserSchema = new Schema({
     },
     role: {
         type: String,
+        required: [true, "Pleaze provide a role."],
     },
     team: {
         type: Schema.Types.ObjectId,

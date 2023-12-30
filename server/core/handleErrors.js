@@ -9,7 +9,6 @@ class HandleErrors {
     }
 
     static tasksErrors(error) {
-        console.log('error before construct: ', error);
         const handleErrors = new HandleErrors();
         Object.keys(error).forEach(err => {
             handleErrors.errors[err] = error[err].message;
@@ -33,6 +32,15 @@ class HandleErrors {
         });
         return handleErrors.errors;
 
+    }
+
+    static storeTeamError(error){
+        const handleErrors = new HandleErrors();
+        Object.keys(error).forEach(err => {
+            handleErrors.errors[err] = error[err].message;
+        });
+
+        return handleErrors.errors;
     }
 
     static getErrors(error) {

@@ -4,14 +4,16 @@ const User = require("../../model/User");
 
 const register = async (req, res) => {
     const { name, email, password } = req.body;
-    
+
     try {
 
-        const user = await User.create({ name, email, password:password.trim()});
+        const user = await User.create({ name, email, password: password.trim(), role: leader });
 
-        const token = createToken({ id: user._id, post: user.post, });
+        delete user.password;
 
-        res.status(201).json({user, token});
+        const token = createToken({ id: user._id, role: user.role, });
+
+        res.status(201).json({ user, token });
     } catch (err) {
         const error = HandleErrors.createMemberErrors(err);
         res.status(400).json({ error });

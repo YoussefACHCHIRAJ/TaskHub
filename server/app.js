@@ -5,6 +5,7 @@ const tasksRouter = require('./core/routes/tasks.js');
 const authRouter = require('./core/routes/auth.js');
 const memberRouter = require('./core/routes/user.js');
 const profileRouter = require('./core/routes/profile.js');
+const teamRouter = require('./core/routes/team.js');
 
 const authorization = require('./core/authorization.js');
 
@@ -20,11 +21,12 @@ app.use(cors())
 /* ROUTES */
 
 
+app.use('/auth',authRouter);
 app.get("/defaultInfo/:id", defaultInfo);
 app.use('/tasks',authorization.logedAuth,tasksRouter);
-app.use('/auth',authRouter);
 app.use("/member",authorization.logedAuth,memberRouter);
 app.use('/profile',authorization.logedAuth,profileRouter);
+app.use("/team", authorization.adminAuth, teamRouter)
 
 app.use((req,res)=>{
     res.status(404).json({msg: 'uncorrect endpoint!'});

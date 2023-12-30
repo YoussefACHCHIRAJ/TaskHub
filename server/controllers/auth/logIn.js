@@ -8,6 +8,8 @@ const logIn = async (req, res) => {
     try {
         
         const user = await User.login(email, password);
+        
+        delete user.password;
 
         const token = createToken({ id: user._id, role: user.role });
 
