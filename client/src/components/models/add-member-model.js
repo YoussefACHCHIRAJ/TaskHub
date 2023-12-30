@@ -21,14 +21,15 @@ const AddMemberModel = ({
     setOpenModal,
     setOpenSnackbar,
     setSnackbarMsg,
-    refetchMembers
+    refetchMembers,
+    roles
 }) => {
     const { auth } = useAuthContext();
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('Frontend');
+    const [role, setRole] = useState('');
     const { isError, error, isLoading, mutate: storeMember, reset } = useStoreMember(`http://localhost:3001/member/create/${auth.user.team}`, {
         onSuccess: () => {
             setOpenModal(false);
@@ -44,7 +45,7 @@ const AddMemberModel = ({
         setName('');
         setEmail('');
         setPassword('');
-        setRole('Frontend');
+        setRole('');
         setOpenModal(false);
         reset();
     }
@@ -116,13 +117,16 @@ const AddMemberModel = ({
                                 labelId="demo-multiple-name-label"
                                 id="demo-multiple-name"
                                 label='Role'
+                                error={isError ? error.role : false}
+                                helperText={isError ? error.role : ''}
                                 value={role}
                             >
-                                <MenuItem value='Frontend'>Front end</MenuItem>
-                                <MenuItem value='Backend'>Back end</MenuItem>
-                                <MenuItem value='Designer'>Designer</MenuItem>
-                                <MenuItem value='Devops'>Devops</MenuItem>
+                                {roles?.map(role => (
+                                    <MenuItem value={role} key={role}>{role}</MenuItem>
+                                ))}
                             </Select>
+                            {isError && error.role && (<Typography className='block sm:px-4' variant='caption' color='error'>{error.role}</Typography>)}
+
                         </FormControl>
 
                         <Button className='bg-black hover:bg-gray-900' onClick={submitStoreMember} variant="contained" disabled={isLoading}>Add this Member</Button>

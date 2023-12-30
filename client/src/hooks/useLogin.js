@@ -1,46 +1,33 @@
-import { useState } from "react";
+import { useMutation } from "react-query";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "./useAuthContext";
 
 
 export const useLogin = () => {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(null);
-    const { dispatch } = useAuthContext();
+
+    const { dispatch } = useAuthContext()
     const navigate = useNavigate();
 
-
-    const login = async (endpoint, dataObject) => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(dataObject)
-            })
-            const result = await response.json();
-
-            if (result.error) {
-                setError(result.error);
-                setIsLoading(false);
-                return false;
+    const query = useMutation(
+        async (payload) => {
+            try {
+            
+                const { data } = await axios.post('http://localhost:3001/auth/login', payload);
+            
+                localStorage.setItem('auth', JSON.stringify(data));
+            
+                dispatch({ type: 'login', payload: data });
+            
+                navigate('/dashboard/app');
+            
+                return true;
+            } catch (error) {
+                throw error.response.data.error
             }
 
-            localStorage.setItem('auth', JSON.stringify(result));
-            setError(false);
-            dispatch({ type: 'login', payload: result });
-            setIsLoading(false);
-            navigate('/dashboard/app');
-            return true;
-
-        } catch (error) {
-            setError(error);
-            setIsLoading(false);
-            return false;
         }
-    }
-    return { login, error, isLoading };
+    )
+    return query
 }
 

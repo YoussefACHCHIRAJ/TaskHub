@@ -12,7 +12,7 @@ const useGetMembers = () => {
                 const { data } = await axios.get(`http://localhost:3001/member/${auth.user._id}`,{
                     headers: { 'authorization': `bearer ${auth.token}` }
                 });
-                return data.members;
+                return data;
             } catch (error) {
                 throw new Error(`Failed load members. ${error}`);
             }

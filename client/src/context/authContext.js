@@ -9,6 +9,8 @@ const authReducer = (state, action) => {
             return { auth: action.payload };
         case 'logout':
             return { auth: null };
+        case 'storeTeam':
+            return { auth: action.payload };
         default:
             return state;
     }
@@ -19,7 +21,7 @@ export const AuthContextProvider = (props) => {
         auth: JSON.parse(localStorage.getItem('auth')) || null
     });
 
-    console.log('authContext state: ', state)
+    console.log('authContext state: ', state);
 
     return (
 

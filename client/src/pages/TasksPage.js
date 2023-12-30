@@ -22,7 +22,7 @@ import {
   AlertTitle,
 } from '@mui/material';
 
-import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel } from '../components/models';
+import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel, AskForCreateTeamModal } from '../components/models';
 import useGetTasks from '../hooks/useGetTasks';
 import { fDate } from '../utils/formatTime';
 
@@ -60,8 +60,8 @@ export default function TaskPage() {
   const [members, setMembers] = useState([]);
   const [snackbarMsg, setSnackbarMsg] = useState('');
   const [categorize, setCategorize] = useState('All');
-  
-  const { data, error, isLoading, isError, refetch:reftechTasksData } = useGetTasks();
+
+  const { data, error, isLoading, isError, refetch: reftechTasksData } = useGetTasks();
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -93,6 +93,11 @@ export default function TaskPage() {
     </Alert>
   </Typography>)
 
+  if (!auth?.user?.team) {
+    return (
+      <AskForCreateTeamModal />
+    )
+  }
 
   return (
     <>
@@ -106,7 +111,7 @@ export default function TaskPage() {
           </Typography>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
-            {auth.user.role.toLowerCase() === 'leader' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
+            {auth?.user?.role?.toLowerCase() === 'leader' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
               New Task
             </Button>)}
           </Stack>
@@ -159,7 +164,7 @@ export default function TaskPage() {
                         <TableCell align="center">Start</TableCell>
                         <TableCell align="center">Due</TableCell>
                         <TableCell align="center">Status</TableCell>
-                        {auth.user.role.toLowerCase() === 'leader' && (<TableCell align="center"> </TableCell>)}
+                        {auth?.user?.role?.toLowerCase() === 'leader' && (<TableCell align="center"> </TableCell>)}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -193,11 +198,11 @@ export default function TaskPage() {
           },
         }}
       >
-        <MenuItem sx={{ color: 'error.main' }} onClick={() => {setDeleteConfirmationOpen(true); setOpen(false)}} >
+        <MenuItem sx={{ color: 'error.main' }} onClick={() => { setDeleteConfirmationOpen(true); setOpen(false) }} >
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete task
         </MenuItem>
-        <MenuItem sx={{ color: 'success.main' }} onClick={() => {setOpenUpdate(true); setOpen(false)}} >
+        <MenuItem sx={{ color: 'success.main' }} onClick={() => { setOpenUpdate(true); setOpen(false) }} >
           <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
           Update task
         </MenuItem>

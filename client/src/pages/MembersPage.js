@@ -29,7 +29,7 @@ import useGetMembers from '../hooks/useGetMembers';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { AddMemberModel, DeleteMemberModal } from '../components/models';
+import { AddMemberModel, AskForCreateTeamModal, DeleteMemberModal } from '../components/models';
 import { UserListHead } from '../sections/@dashboard/user';
 import useAuthContext from '../hooks/useAuthContext';
 // mock
@@ -78,7 +78,7 @@ export default function MembersPage() {
   const { auth } = useAuthContext();
 
 
-  const { error, isLoading, data: members, refetch: refetchMembers } = useGetMembers();
+  const { error, isLoading, data, refetch: refetchMembers } = useGetMembers();
 
 
   const [page, setPage] = useState(0);
@@ -108,7 +108,7 @@ export default function MembersPage() {
   let users = []
 
   if (!isLoading) {
-    users = members?.map((member) => ({
+    users = data?.members?.map((member) => ({
       id: member._id,
       name: member.name,
       email: member.email,
@@ -145,7 +145,6 @@ export default function MembersPage() {
     setMemberSelected(null);
   };
 
-
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
 
   const filteredUsers = applySortFilter(users, getComparator(order, orderBy), filterName);
@@ -162,7 +161,14 @@ export default function MembersPage() {
       This could be due a server issue.<br />
       Check if you are connecting to the server or internet.<br />
     </Alert>
-  </Typography>)
+  </Typography>);
+
+
+  if (!auth?.user?.team) {
+    return (
+      <AskForCreateTeamModal />
+    )
+  }
 
   return (
     <>
@@ -173,9 +179,9 @@ export default function MembersPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Members
+            {data?.team} members
           </Typography>
-          {auth.user.role.toLowerCase() === 'leader' &&
+          {auth?.user?.role?.toLowerCase() === 'leader' &&
             (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
               New Member
             </Button>)}
@@ -187,6 +193,7 @@ export default function MembersPage() {
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
           refetchMembers={refetchMembers}
+          roles={data.roles}
         />
 
         <DeleteMemberModal
@@ -215,7 +222,7 @@ export default function MembersPage() {
                     <UserListHead
                       order={order}
                       orderBy={orderBy}
-                      headLabel={auth.user?.role.toLowerCase() === 'leader' ? TABLE_HEAD : TABLE_HEAD.slice(0, -1)}
+                      headLabel={auth.user?.role?.toLowerCase() === 'leader' ? TABLE_HEAD : TABLE_HEAD.slice(0, -1)}
                       rowCount={users.length}
                       onRequestSort={handleRequestSort}
                     />
@@ -237,7 +244,7 @@ export default function MembersPage() {
                             <TableCell align="left">{email}</TableCell>
 
                             <TableCell align="left">{role}</TableCell>
-                            {auth.user.role.toLowerCase() === 'leader' && auth.user.email !== email && (<TableCell align="center">
+                            {auth.user.role?.toLowerCase() === 'leader' && auth.user.email !== email && (<TableCell align="center">
                               <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row)}>
                                 <Iconify icon={'eva:more-vertical-fill'} />
                               </IconButton>

@@ -1,5 +1,4 @@
-import React from 'react'
-import { useState } from 'react';
+import React, { useState } from 'react'
 
 // @mui
 import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
@@ -18,19 +17,13 @@ export default function LoginForm() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [open, setOpen] = useState(false);
-  const { login, error, isLoading } = useLogin();
+  const { mutate:login , error, isLoading } = useLogin();
 
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const isLoged = await login('http://localhost:3001/auth/login', { email, password });
-
-    if (isLoged) console.log('loged');
-
-    else {
-      console.log('does not loged');
-      console.log(error)
-    }
+    login({ email, password });
+    console.log({front:error, isLoading});
 
   }
 

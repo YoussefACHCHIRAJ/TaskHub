@@ -1,5 +1,4 @@
-import React from 'react'
-import { useState } from 'react';
+import React, { useState } from 'react'
 
 // @mui
 import { Stack, IconButton, InputAdornment, TextField } from '@mui/material';
@@ -16,19 +15,14 @@ export default function RegisterForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { register, error, isLoading } = useRegister()
+  const { mutate: register, error, isLoading } = useRegister()
 
 
   const handleSubmit = async e => {
     e.preventDefault();
     const registerData = { name, email, password }
-    const isRegistered = await register('http://localhost:3001/auth/register', registerData);
-    if (isRegistered) {
-      console.log('user is register');
-    } else {
-      console.log('user does not register');
-      console.log(error);
-    }
+    register(registerData);
+
   }
 
   return (

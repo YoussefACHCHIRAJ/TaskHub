@@ -13,10 +13,8 @@ const useUpdateTask = ({ onSuccess }) => {
                 }
             });
             onSuccess();
-            console.log({ response });
             return true;
         } catch (error) {
-            console.log({ updateError: error.response.data });
             return error.response.data;
         }
     }

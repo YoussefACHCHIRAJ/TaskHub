@@ -26,6 +26,7 @@ import Row from '../components/row/row';
 
 import useAuthContext from '../hooks/useAuthContext';
 import CategorizeTasksModale from '../components/models/categorize-tasks-model';
+import { AskForCreateTeamModal } from '../components/models';
 
 
 
@@ -43,7 +44,7 @@ function createData(id, title, start, due, description, responsables, categorize
 
 
 export default function YourTasksPage() {
-    const { user } = useAuthContext();
+    const { auth } = useAuthContext();
 
     const { tasks, error, isLoading } = useGetTasks('http://localhost:3001/tasks/');
     const [categorize, setCategorize] = React.useState('All');
@@ -51,7 +52,7 @@ export default function YourTasksPage() {
     let rows = [];
 
     if (!isLoading && tasks) {
-        rows = tasks.filter(task => task.responsables.includes(user.member.name))
+        rows = tasks.filter(task => task.responsables.includes(auth?.user?.name))
             .map(task => createData(
                 task._id,
                 task.title,
@@ -67,11 +68,18 @@ export default function YourTasksPage() {
     if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
         <Alert severity="error">
             <AlertTitle>error</AlertTitle>
-            {error.message}<br/>
-            This could be due a server issue.<br/>
-            Check if you are connecting to the server or internet.<br/>
+            {error.message}<br />
+            This could be due a server issue.<br />
+            Check if you are connecting to the server or internet.<br />
         </Alert>
     </Typography>)
+
+
+    if (!auth?.user?.team) {
+        return (
+            <AskForCreateTeamModal />
+        )
+    }
     return (
         <>
             <Helmet>
@@ -80,7 +88,7 @@ export default function YourTasksPage() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                     <Typography variant="h4" gutterBottom>
-                        Your Tasks {user.member.name}
+                        Your Tasks {auth?.user?.name}
                     </Typography>
                     <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
                 </Stack>
