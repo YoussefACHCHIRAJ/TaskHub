@@ -7,8 +7,10 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
+    Typography
 } from '@mui/material'
 import useDeleteMember from '../../hooks/useDeleteMember';
+
 
 const DeleteMemberModal = ({
     deleteConfirmationOpen,
@@ -18,7 +20,7 @@ const DeleteMemberModal = ({
     setSnackbarMsg,
     refetchMembers,
 }) => {
-    const { isError,error, isLoading, mutate:deleteMember } = useDeleteMember({
+    const { isError, error, isLoading, mutate: deleteMember } = useDeleteMember({
         onSuccess: () => {
             setOpenSnackbar(true);
             setSnackbarMsg('This member was deleted.')
@@ -31,16 +33,18 @@ const DeleteMemberModal = ({
     });
     const submitDeleteTask = async () => {
         deleteMember(memberSelected?.id);
-            
+
     }
     return (
         <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>
             <DialogTitle>Delete Task</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Are you sure you want to remove <span className='font-bold'>{ memberSelected?.name }</span> from your team?
+                    Are you sure you want to remove <span className='font-bold'>{memberSelected?.name}</span> from your team?
                     This member's account will be deleted for ever.
                 </DialogContentText>
+                {isError && error?.authorization &&
+                    (<Typography className='block sm:px-2' variant='caption' color='error'>{error?.authorization?.message}</Typography>)}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setDeleteConfirmationOpen(false)} color="primary">

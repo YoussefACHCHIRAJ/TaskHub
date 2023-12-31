@@ -50,12 +50,13 @@ function createData(id, title, start, due, description, responsibleUsers, catego
 
 export default function TaskPage() {
   const { auth } = useAuthContext();
-  const [taskSelected, setTaskSelected] = useState(null);
   const [open, setOpen] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+
+  const [taskSelected, setTaskSelected] = useState(null);
   const [rows, setRows] = useState([]);
   const [members, setMembers] = useState([]);
   const [snackbarMsg, setSnackbarMsg] = useState('');

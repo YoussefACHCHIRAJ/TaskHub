@@ -84,7 +84,7 @@ const UpdateTaskModel = ({
         event.preventDefault();
         const responsablesArray = responsables?.length > 0 ? responsables : null;
         const updatedTask = { title, description, dateStart, deadline, responsables: responsablesArray };
-        storeNewTask({taskId: taskSelected.id, updatedTask});
+        storeNewTask({ taskId: taskSelected.id, updatedTask });
 
     }
     useEffect(() => {
@@ -210,7 +210,8 @@ const UpdateTaskModel = ({
                             {error && error.responsables && (<Typography className='block sm:px-4' variant='caption' color='error'>{error.responsables}</Typography>)}
 
                         </FormControl>
-
+                        {isError && error?.authorization &&
+                            (<Typography className='block sm:px-2' variant='caption' color='error'>{error?.authorization?.message}</Typography>)}
                         <Button className='bg-black hover:bg-gray-900' variant="contained" onClick={submitTasks} disabled={isLoading}>Update this task</Button>
                         <Button onClick={handleCloseModal}>Cancel</Button>
                     </Stack>

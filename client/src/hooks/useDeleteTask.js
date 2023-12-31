@@ -14,8 +14,7 @@ const useDeleteTask = ({ onSuccess }) => {
         onSuccess();
         return data;
       } catch (error) {
-        console.log({ error });
-        return error;
+        throw error.response.data;
       }
     }
   );

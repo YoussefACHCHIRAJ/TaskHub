@@ -48,7 +48,7 @@ const CreateTeamModal = ({
 
     const submit = e => {
         e.preventDefault();
-        storeTeam({name, roles: Array.from(roles)});
+        storeTeam({ name, roles: Array.from(roles) });
     }
     return (
         <Modal open={openModal} onClose={() => setOpenModal(false)}>
@@ -105,6 +105,9 @@ const CreateTeamModal = ({
                                 </span>
                             ))}
                         </div>
+
+                        {isError && error?.authorization &&
+                            (<Typography className='block sm:px-2' variant='caption' color='error'>{error?.authorization?.message}</Typography>)}
                         <Button onClick={submit} disabled={isLoading} className='bg-black hover:bg-gray-900' variant="contained">Add this Team</Button>
                         <Button onClick={cancel}>Cancel</Button>
                     </Stack>

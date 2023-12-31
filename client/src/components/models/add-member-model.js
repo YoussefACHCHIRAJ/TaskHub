@@ -30,7 +30,7 @@ const AddMemberModel = ({
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
-    const { isError, error, isLoading, mutate: storeMember, reset } = useStoreMember(`http://localhost:3001/member/create/${auth.user.team}`, {
+    const { isError, error, isLoading, mutate: storeMember, reset } = useStoreMember({
         onSuccess: () => {
             setOpenModal(false);
             setOpenSnackbar(true);
@@ -128,7 +128,8 @@ const AddMemberModel = ({
                             {isError && error.role && (<Typography className='block sm:px-4' variant='caption' color='error'>{error.role}</Typography>)}
 
                         </FormControl>
-
+                        {isError && error?.authorization &&
+                            (<Typography className='block sm:px-2' variant='caption' color='error'>{error?.authorization?.message}</Typography>)}
                         <Button className='bg-black hover:bg-gray-900' onClick={submitStoreMember} variant="contained" disabled={isLoading}>Add this Member</Button>
                         <Button onClick={cancel}>Cancel</Button>
                     </Stack>

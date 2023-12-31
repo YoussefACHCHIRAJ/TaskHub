@@ -37,6 +37,9 @@ const CreateTaskModel = ({
     setSnackbarMsg,
     reftechTasksData
 }) => {
+
+
+
     const theme = useTheme();
     const { auth } = useAuthContext()
     const [title, setTitle] = useState('');
@@ -57,6 +60,8 @@ const CreateTaskModel = ({
             }, 1500);
         }
     });
+
+    console.log("error creation: ", error);
 
     const handleChangeResponsables = (event) => {
         const {
@@ -198,9 +203,13 @@ const CreateTaskModel = ({
 
                         </FormControl>
 
+                        {isError && error?.authorization &&
+                            (<Typography className='block sm:px-2' variant='caption' color='error'>{error?.authorization?.message}</Typography>)}
                         <Button className='bg-black hover:bg-gray-900' disabled={isLoading} variant="contained" onClick={submitTasks}>Add this task</Button>
                         <Button onClick={handleCloseModal}>Cancel</Button>
+
                     </Stack>
+
                 </Box>
             </Box>
         </Modal>

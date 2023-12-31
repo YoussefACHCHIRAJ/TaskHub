@@ -17,7 +17,7 @@ const useDeleteMember = ({ onSuccess }) => {
                 // return true;
             } catch (error) {
                 console.log({errorMessage: error.response.data});
-                // return false;
+                throw error.response.data;
             }       
         }
     );

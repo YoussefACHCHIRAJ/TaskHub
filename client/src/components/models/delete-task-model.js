@@ -6,9 +6,11 @@ import {
     DialogTitle,
     DialogContent,
     DialogContentText,
-    DialogActions,
+    DialogActions, 
+    Typography
 } from '@mui/material'
 import useDeleteTask from '../../hooks/useDeleteTask';
+
 
 const DeleteTaskModel = ({
     deleteConfirmationOpen,
@@ -18,7 +20,7 @@ const DeleteTaskModel = ({
     setSnackbarMsg,
     refetchTasks,
 }) => {
-    const { isError,error, isLoading, mutate:deleteTask } = useDeleteTask({
+    const { isError, error, isLoading, mutate: deleteTask } = useDeleteTask({
         onSuccess: () => {
             setOpenSnackbar(true);
             setSnackbarMsg('This task was deleted.')
@@ -31,7 +33,7 @@ const DeleteTaskModel = ({
     });
     const submitDeleteTask = async () => {
         deleteTask(taskSelected?.id);
-            
+
     }
     return (
         <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>
@@ -40,6 +42,8 @@ const DeleteTaskModel = ({
                 <DialogContentText>
                     Are you sure you want to delete this task?
                 </DialogContentText>
+                {isError && error?.authorization &&
+                    (<Typography className='block sm:px-2' variant='caption' color='error'>{error?.authorization?.message}</Typography>)}
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setDeleteConfirmationOpen(false)} color="primary">

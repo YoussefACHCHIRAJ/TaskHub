@@ -17,6 +17,21 @@ import useAuthContext from '../hooks/useAuthContext';
 import { fDateTime } from '../utils/formatTime';
 
 // ----------------------------------------------------------------------
+const CHARTMONTHS = [
+  { 1: '01/01/2023' },
+  { 2: '02/01/2023' },
+  { 3: '03/01/2023' },
+  { 4: '04/01/2023' },
+  { 5: '05/01/2023' },
+  { 6: '06/01/2023' },
+  { 7: '07/01/2023' },
+  { 8: '08/01/2023' },
+  { 9: '09/01/2023' },
+  { 10: '10/01/2023' },
+  { 11: '11/01/2023' },
+  { 12: '12/01/2023' },
+]
+// ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
@@ -34,7 +49,10 @@ export default function DashboardAppPage() {
     </Alert>
   </Typography>)
 
-  const { tasksCount, teamMembersCount, authUserTaskCount, tasks } = defaultInfo;
+  const { tasksCount, teamMembersCount, authUserTaskCount, tasks, chartTask } = defaultInfo;
+
+
+  
   return (
     <>
       <Helmet>
@@ -71,7 +89,7 @@ export default function DashboardAppPage() {
                 id: task._id,
                 title: task.title,
                 postedAt: fDateTime(task.createdAt)
-              }))}
+              })).reverse()}
             />
 
           </Grid>
@@ -92,25 +110,16 @@ export default function DashboardAppPage() {
           <Grid item xs={12} md={12} lg={12}>
             <AppWebsiteVisits
               title="Tasks"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
+              chartLabels={CHARTMONTHS.map((month, index) => month[index + 1])}
               chartData={[
                 {
                   name: 'Tasks',
                   type: 'area',
                   fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
+                  data: CHARTMONTHS.map((_, index) => {
+                    const data = chartTask.find(data => data.month === index + 1);
+                    return data ? data.count : 0;
+                  }),
                 }
               ]}
             />

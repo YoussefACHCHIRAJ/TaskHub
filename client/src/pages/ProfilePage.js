@@ -5,7 +5,7 @@ import useAuthContext from '../hooks/useAuthContext'
 import Iconify from '../components/iconify'
 
 const ProfilePage = () => {
-    const { user } = useAuthContext();
+    const { auth } = useAuthContext();
     return (
         <>
             <Helmet>
@@ -28,7 +28,7 @@ const ProfilePage = () => {
                         </Typography>
 
                         <Typography variant='p'>
-                            {user.member.name}
+                            {auth?.user.name}
                         </Typography>
                     </Stack>
                     <Divider sx={{ marginBlock: '.5em', backgroundColor: 'black' }} />
@@ -38,7 +38,7 @@ const ProfilePage = () => {
                             Email:
                         </Typography>
                         <Typography variant='p'>
-                            {user.member.email}
+                            {auth?.user.email}
                         </Typography>
                     </Stack>
                     <Divider sx={{ marginBlock: '.5em', backgroundColor: 'black' }} />
@@ -47,7 +47,7 @@ const ProfilePage = () => {
                             Role:
                         </Typography>
                         <Typography variant='p'>
-                            {user.member.post}
+                            {auth?.user.post}
                         </Typography>
                     </Stack>
                     <Divider sx={{ marginBlock: '.5em', backgroundColor: 'black' }} />
@@ -56,7 +56,7 @@ const ProfilePage = () => {
                             Team:
                         </Typography>
                         <Typography variant='p'>
-                            {user.member.team}
+                            {auth?.user.team}
                         </Typography>
                     </Stack>
                     <Divider sx={{ marginBlock: '.5em', backgroundColor: 'black' }} />
