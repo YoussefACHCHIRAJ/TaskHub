@@ -1,5 +1,6 @@
 class HandleErrors {
     errors = {};
+    
     static loginErrors(error) {
         const handleErrors = new HandleErrors();
         Object.keys(error).forEach(err => {
@@ -41,10 +42,6 @@ class HandleErrors {
         });
 
         return handleErrors.errors;
-    }
-
-    static getErrors(error) {
-        return Object.keys(error);
     }
 }
 

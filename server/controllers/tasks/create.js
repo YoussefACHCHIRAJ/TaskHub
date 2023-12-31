@@ -5,7 +5,6 @@ const UserTask = require("../../model/UserTask");
 
 const createTask = async (req, res) => {
     const { title, description, dateStart, deadline, teamId, responsables } = req.body;
-    console.log({ title, description, dateStart, deadline, teamId, responsables });
     try {
         const team = new mongoose.Types.ObjectId(teamId);
         const newTask = await Task.create({ title, description, dateStart, deadline, team });

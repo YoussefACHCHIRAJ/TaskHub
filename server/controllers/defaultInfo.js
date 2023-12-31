@@ -16,24 +16,33 @@ const defaultInfo = async (req, res) => {
         const teamMembersCount = await User.countDocuments({ team });
         const authUserTaskCount = await UserTask.countDocuments({user: _id});
         const tasksCount = tasks.length;
-        // console.log({ tasks, team, teamMember });
-        // const { authorization } = req.headers;
+       
+        const chartTask = await Task.aggregate([
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$dateStart' },
+                        month: { $month: '$dateStart' }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    _id: 0, // Exclude _id field from results
+                    year: '$_id.year',
+                    month: '$_id.month',
+                    count: 1
+                }
+            },
+            {
+                $sort: { year: 1, month: 1 } // Optionally, sort by year and month
+            }
+        ]);
 
-        // if (!authorization) throw { authorization: { message: "The Token is required." } }
+        console.log({chartTask});
 
-        // const token = authorization.split(' ')[1];
-
-        // const decodedToken = await decodeToken(token);
-
-        // const team = await Team.findOne({ name: decodedToken.team });
-
-        // const tasks = await Promise.all(team?.tasks?.map(async task => {
-        //     return await Tasks.findById(task);
-        // }));
-
-        // const userTasks = tasks.filter(task => task.responsables.includes(name));
-
-        res.status(200).json({ tasksCount, teamMembersCount, authUserTaskCount, tasks });
+        res.status(200).json({ tasksCount, teamMembersCount, authUserTaskCount, tasks, chartTask });
     } catch (error) {
         console.log(error);
         res.status(400).json({ error });

@@ -1,5 +1,5 @@
 const express = require('express');
-const authorization = require('../authorization');
+const Authorization = require('../Authorization');
 const tasks = require('../../controllers/tasks');
 const createTask = require('../../controllers/tasks/create');
 const deleteTask = require('../../controllers/tasks/delete');
@@ -9,10 +9,10 @@ const router = express.Router();
 
 router.get("/:id",tasks);
 
-router.post("/create",authorization.adminAuth,createTask);
+router.post("/create",Authorization.authorizeAdmin,createTask);
 
-router.put("/update/:id",authorization.adminAuth,updateTask);
+router.put("/update/:id",Authorization.authorizeAdmin,updateTask);
 
-router.delete("/delete/:id",authorization.adminAuth,deleteTask);
+router.delete("/delete/:id",Authorization.authorizeAdmin,deleteTask);
 
 module.exports = router;

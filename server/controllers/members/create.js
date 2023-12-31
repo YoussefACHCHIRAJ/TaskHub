@@ -6,7 +6,9 @@ const create = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
-        const team = new mongoose.Types.ObjectId(req.params.teamId);
+        const leader = new mongoose.Types.ObjectId(req.params.leader);
+
+        const  { team } = await User.findById(leader).select('team');
 
         const newMember = await User.create({ name, email, password, role, team });
 

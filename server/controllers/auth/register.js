@@ -4,10 +4,8 @@ const User = require("../../model/User");
 
 const register = async (req, res) => {
     const { name, email, password } = req.body;
-
     try {
-
-        const user = await User.create({ name, email, password: password.trim(), role: leader });
+        const user = await User.create({ name, email, password: password.trim(), role: "leader" });
 
         delete user.password;
 
