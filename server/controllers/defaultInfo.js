@@ -40,8 +40,6 @@ const defaultInfo = async (req, res) => {
             }
         ]);
 
-        console.log({chartTask});
-
         res.status(200).json({ tasksCount, teamMembersCount, authUserTaskCount, tasks, chartTask });
     } catch (error) {
         console.log(error);

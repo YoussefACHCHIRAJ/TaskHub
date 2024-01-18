@@ -31,9 +31,9 @@ class Authorization {
             const decoded = await Authorization.verifyToken(token);
             next();
         } catch (error) {
-            Authorization.authorizationError.message = 'Unauthorized'
+            Authorization.authorizationError.message = 'Unauthorized. Failed Authentification' + error
 
-            res.status(401).json({ error: 'Unauthorized.' });
+            res.status(401).json({authorization: Authorization.authorizationError});
         }
 
     };
