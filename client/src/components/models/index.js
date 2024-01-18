@@ -5,6 +5,7 @@ import DeleteTaskModel from "./delete-task-model";
 import DeleteMemberModal from "./delete-member-model";
 import AskForCreateTeamModal from "./ask-for-create-team-moda";
 import CreateTeamModal from "./create-team-modal";
+import TaskCategorySelectorModal from "./task-category-selector-modal";
 
 export {
     CreateTaskModel,
@@ -13,5 +14,6 @@ export {
     UpdateTaskModel,
     DeleteMemberModal,
     AskForCreateTeamModal,
-    CreateTeamModal
+    CreateTeamModal,
+    TaskCategorySelectorModal
 }

@@ -7,7 +7,7 @@ const useUpdateTask = ({ onSuccess }) => {
 
     const query = useMutation(async ({taskId, updatedTask }) => {
         try {
-            const response = await axios.put(`http://localhost:3001/tasks/update/${taskId}`, updatedTask, {
+            await axios.put(`http://localhost:3001/tasks/update/${taskId}`, updatedTask, {
                 headers: {
                     "Authorization": `bearer ${auth.token}`
                 }

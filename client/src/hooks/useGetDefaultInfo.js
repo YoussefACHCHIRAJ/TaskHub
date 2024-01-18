@@ -11,7 +11,6 @@ const useGetDefaultInfo = (payload) => {
         queryFn: async () => {
             try {
                 const { data } = await axios(payload);
-                console.log({data});
                 return data;
 
             } catch (error) {

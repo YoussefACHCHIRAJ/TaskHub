@@ -5,8 +5,6 @@ import { Helmet } from 'react-helmet-async';
 import { styled } from '@mui/material/styles';
 import { Container, Typography } from '@mui/material';
 import {Link} from 'react-router-dom'
-// hooks
-import useResponsive from '../hooks/useResponsive';
 // components
 import Logo from '../components/logo';
 // sections
@@ -35,8 +33,6 @@ const StyledContent = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Register() {
-  const mdUp = useResponsive('up', 'md');
-  
 
   return (
     <>

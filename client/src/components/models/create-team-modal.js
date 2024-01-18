@@ -7,7 +7,6 @@ import {
     Stack,
     Button,
 } from '@mui/material'
-import useAuthContext from '../../hooks/useAuthContext';
 import useStoreTeam from '../../hooks/useStoreTeam';
 
 const CreateTeamModal = ({
@@ -16,12 +15,17 @@ const CreateTeamModal = ({
     setOpenSnackbar,
     setSnackbarMsg,
 }) => {
-    const { auth } = useAuthContext();
     const [name, setName] = useState('');
     const [role, setRole] = useState('');
     const [roles, setRoles] = useState(new Set());
 
-    const { mutate: storeTeam, error, isError, isLoading, reset } = useStoreTeam();
+    const { mutate: storeTeam, error, isError, isLoading, reset } = useStoreTeam({
+        onSuccess: () => {
+            setOpenModal(false);
+            setOpenSnackbar(true);
+            setSnackbarMsg("The team has been created");
+        }
+    });
 
     const handleAddRole = () => {
         const updatedRoles = new Set(roles);

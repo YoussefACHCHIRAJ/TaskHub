@@ -12,7 +12,6 @@ import {
     Stack,
     Button,
 } from '@mui/material'
-import useAuthContext from '../../hooks/useAuthContext';
 import useStoreMember from '../../hooks/useStoreMember';
 import Iconify from '../iconify';
 
@@ -24,7 +23,6 @@ const AddMemberModel = ({
     refetchMembers,
     roles
 }) => {
-    const { auth } = useAuthContext();
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');

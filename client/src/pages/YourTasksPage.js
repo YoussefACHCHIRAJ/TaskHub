@@ -25,20 +25,19 @@ import Scrollbar from '../components/scrollbar';
 import Row from '../components/row/row';
 
 import useAuthContext from '../hooks/useAuthContext';
-import CategorizeTasksModale from '../components/models/categorize-tasks-model';
-import { AskForCreateTeamModal } from '../components/models';
+import { AskForCreateTeamModal, TaskCategorySelectorModal } from '../components/models';
 
 
 
-function createData(id, title, start, due, description, responsables, categorize) {
+function createData(id, title, start, due, description, responsibleUsers) {
     return {
         id,
         title,
         start,
         due,
         description,
-        responsables,
-        categorize
+        responsibleUsers,
+        
     };
 }
 
@@ -46,26 +45,27 @@ function createData(id, title, start, due, description, responsables, categorize
 export default function YourTasksPage() {
     const { auth } = useAuthContext();
 
-    const { tasks, error, isLoading } = useGetTasks('http://localhost:3001/tasks/');
-    const [categorize, setCategorize] = React.useState('All');
+    const { data, error, isLoading, isError } = useGetTasks();
+
+    const [category, setCategory] = React.useState('All');
 
     let rows = [];
-
-    if (!isLoading && tasks) {
-        rows = tasks.filter(task => task.responsables.includes(auth?.user?.name))
+    
+    if (!isLoading && data?.tasks) {
+        rows = data?.tasks?.filter(task => task.responsibleUsers.some(user => user?._id === auth?.user?._id))
             .map(task => createData(
                 task._id,
                 task.title,
                 fDate(task.dateStart),
                 fDate(task.deadline),
                 task.description,
-                task.responsables,
-                categorize)
+                task.responsibleUsers,
+                )
             );
     }
     if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 
-    if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
+    if (isError) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
         <Alert severity="error">
             <AlertTitle>error</AlertTitle>
             {error.message}<br />
@@ -90,7 +90,7 @@ export default function YourTasksPage() {
                     <Typography variant="h4" gutterBottom>
                         Your Tasks {auth?.user?.name}
                     </Typography>
-                    <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
+                    <TaskCategorySelectorModal category={category} setCategory={setCategory} />
                 </Stack>
 
                 {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
@@ -116,7 +116,7 @@ export default function YourTasksPage() {
                                         </TableHead>
                                         <TableBody>
                                             {rows.map((row) => (
-                                                <Row key={row.id} row={row} options={false} />
+                                                <Row key={row.id} row={row} selectedCategory={category} options={false} />
                                             ))
                                             }
                                         </TableBody>

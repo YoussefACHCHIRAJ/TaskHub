@@ -10,11 +10,10 @@ const useDeleteMember = ({ onSuccess }) => {
     const query = useMutation(
         async memberId => {
             try {
-                const { data } = await axios.delete(`http://localhost:3001/member/delete/${memberId}`, {
+                await axios.delete(`http://localhost:3001/member/delete/${memberId}`, {
                     headers: { 'authorization': `bearer ${auth.token}` }
                   });
                 onSuccess();
-                // return true;
             } catch (error) {
                 console.log({errorMessage: error.response.data});
                 throw error.response.data;

@@ -22,7 +22,7 @@ import {
   AlertTitle,
 } from '@mui/material';
 
-import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel, AskForCreateTeamModal } from '../components/models';
+import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel, AskForCreateTeamModal, TaskCategorySelectorModal } from '../components/models';
 import useGetTasks from '../hooks/useGetTasks';
 import { fDate } from '../utils/formatTime';
 
@@ -31,11 +31,10 @@ import Row from '../components/row/row';
 
 import Iconify from '../components/iconify';
 import useAuthContext from '../hooks/useAuthContext';
-import CategorizeTasksModale from '../components/models/categorize-tasks-model';
 
 
 
-function createData(id, title, start, due, description, responsibleUsers, categorize) {
+function createData(id, title, start, due, description, responsibleUsers) {
   return {
     id,
     title,
@@ -43,8 +42,7 @@ function createData(id, title, start, due, description, responsibleUsers, catego
     due,
     description,
     responsibleUsers,
-    categorize
-  };
+    };
 }
 
 
@@ -60,18 +58,18 @@ export default function TaskPage() {
   const [rows, setRows] = useState([]);
   const [members, setMembers] = useState([]);
   const [snackbarMsg, setSnackbarMsg] = useState('');
-  const [categorize, setCategorize] = useState('All');
+  const [category, setCategory] = useState('All');
 
   const { data, error, isLoading, isError, refetch: reftechTasksData } = useGetTasks();
 
   useEffect(() => {
     if (!isLoading && data) {
-      const newRows = data?.tasks && data?.tasks?.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers, categorize));
+      const newRows = data?.tasks && data?.tasks?.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers));
       setRows(newRows);
       const newMembers = data?.teamMembers && data.teamMembers.map(member => ({ id: member._id, name: member.name }));
       setMembers(newMembers);
     }
-  }, [isLoading, data, categorize]);
+  }, [isLoading, data, category]);
 
   const handleOpenMenu = (event, task) => {
     setTaskSelected(task);
@@ -111,7 +109,7 @@ export default function TaskPage() {
             Tasks
           </Typography>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <CategorizeTasksModale categorize={categorize} setCategorize={setCategorize} />
+            <TaskCategorySelectorModal category={category} setCategory={setCategory} />
             {auth?.user?.role?.toLowerCase() === 'leader' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
               New Task
             </Button>)}
@@ -170,7 +168,7 @@ export default function TaskPage() {
                     </TableHead>
                     <TableBody>
                       {rows.map((row) => (
-                        <Row key={row.id} row={row} handleOpenMenu={handleOpenMenu} options={Boolean(true)} />
+                        <Row key={row.id} row={row} selectedCategory={category} handleOpenMenu={handleOpenMenu} options={Boolean(true)} />
                       ))
                       }
                     </TableBody>

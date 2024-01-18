@@ -6,11 +6,11 @@ import Iconify from '../iconify/Iconify';
 import useAuthContext from '../../hooks/useAuthContext';
 
 
-const Row = ({ row, handleOpenMenu, options }) => {
+const Row = ({ row, handleOpenMenu, options, selectedCategory }) => {
 
     const { auth } = useAuthContext()
     const [open, setOpen] = useState(false);
-   
+
     const taskStatus = (start, due) => {
         const today = new Date();
         const startDate = new Date(start);
@@ -25,7 +25,9 @@ const Row = ({ row, handleOpenMenu, options }) => {
     }
 
     const { status, statusColor, statusIcon } = taskStatus(row.start, row.due);
-    if (row.categorize !== 'All' && row.categorize !== status) return null;
+    
+    if (selectedCategory !== 'All' && selectedCategory !== status) return null;
+    
     return (
         <>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -73,13 +75,12 @@ const Row = ({ row, handleOpenMenu, options }) => {
                                     responsables
                                 </Typography>
                                 {
-                                     row.responsibleUsers.map((respo, index) => {
-                                    return (
+                                    row.responsibleUsers.map((respo, index) => (
                                         <Typography key={index} variant="body2" gutterBottom component="p">
                                             {respo.name}{auth.user.name === respo.name && " (You)"}
                                         </Typography>
                                     )
-                                })}
+                                    )}
                             </Stack>
                         </Box>
                     </Collapse>

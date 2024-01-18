@@ -7,9 +7,9 @@ const useGetMembers = () => {
 
     const query = useQuery({
         queryKey: ["getMembers"],
-        queryFn : async () => {
+        queryFn: async () => {
             try {
-                const { data } = await axios.get(`http://localhost:3001/member/${auth.user._id}`,{
+                const { data } = await axios.get(`http://localhost:3001/member/${auth.user._id}`, {
                     headers: { 'authorization': `bearer ${auth.token}` }
                 });
                 return data;
@@ -20,7 +20,7 @@ const useGetMembers = () => {
     });
 
     return query;
-    
+
 }
 
 export default useGetMembers

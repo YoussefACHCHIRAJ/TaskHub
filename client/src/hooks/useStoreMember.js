@@ -7,7 +7,7 @@ const useStoreMember = ({ onSuccess }) => {
 
     const query = useMutation(async (memberData) => {
         try {
-            const response = await axios.post(`http://localhost:3001/member/create/${auth.user._id}`, memberData, {
+            await axios.post(`http://localhost:3001/member/create/${auth.user._id}`, memberData, {
                 headers: {
                     "Authorization": `bearer ${auth.token}`
                 }

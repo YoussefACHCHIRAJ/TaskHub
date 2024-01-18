@@ -1,11 +1,10 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { FormHelperText } from '@mui/material';
 
-const CategorizeTasksModale = ({ categorize, setCategorize }) => {
+const TaskCategorySelectorModal = ({ category, setCategory }) => {
 
   return (
     <div>
@@ -15,8 +14,8 @@ const CategorizeTasksModale = ({ categorize, setCategorize }) => {
           className='max-h-[40px]'
           labelId="demo-simple-select-helper-label"
           id="demo-simple-select-helper"
-          value={categorize}
-          onChange={(e) => setCategorize(e.target.value)}
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
         >
           <MenuItem value='All'>All</MenuItem>
           <MenuItem value='Pending'>Pending</MenuItem>
@@ -28,4 +27,4 @@ const CategorizeTasksModale = ({ categorize, setCategorize }) => {
   )
 }
 
-export default CategorizeTasksModale
+export default TaskCategorySelectorModal
