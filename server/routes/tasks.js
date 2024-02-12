@@ -1,9 +1,9 @@
 const express = require('express');
-const Authorization = require('../Authorization');
-const tasks = require('../../controllers/tasks');
-const createTask = require('../../controllers/tasks/create');
-const deleteTask = require('../../controllers/tasks/delete');
-const updateTask = require('../../controllers/tasks/update');
+const Authorization = require('../core/Authorization');
+const tasks = require('../controllers/tasks');
+const createTask = require('../controllers/tasks/create');
+const deleteTask = require('../controllers/tasks/delete');
+const updateTask = require('../controllers/tasks/update');
 
 const router = express.Router();
 

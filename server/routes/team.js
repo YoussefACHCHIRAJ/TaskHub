@@ -1,6 +1,7 @@
 const express = require("express");
-const storeTeam = require("../../controllers/team/store");
-const Authorization = require("../Authorization");
+const storeTeam = require("../controllers/team/store");
+const Authorization = require('../core/Authorization');
+
 
 const router = express.Router();
 

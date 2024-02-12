@@ -1,8 +1,9 @@
 const express = require('express');
-const getTeamMembers = require('../../controllers/members');
-const create = require('../../controllers/members/create');
-const destroyUser = require("../../controllers/members/destroy");
-const Authorization = require("../Authorization");
+const getTeamMembers = require('../controllers/members');
+const create = require('../controllers/members/create');
+const destroyUser = require("../controllers/members/destroy");
+const Authorization = require('../core/Authorization');
+
 
 const router = express.Router();
 
