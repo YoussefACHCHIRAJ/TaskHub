@@ -9,8 +9,8 @@ import {
     DialogActions,
 } from '@mui/material'
 
-const ForgetPasswordModel = ({ open, setOpen }) => (
-        <Dialog open={open} onClose={() => setOpen(false)}>
+function ForgetPasswordModel({ open, setOpen }) {
+  return <Dialog open={open} onClose={() => setOpen(false)}>
             <DialogTitle>Forget Password ?</DialogTitle>
             <DialogContent>
                 <DialogContentText>
@@ -25,7 +25,7 @@ const ForgetPasswordModel = ({ open, setOpen }) => (
             </DialogActions>
 
         </Dialog>
-    )
+}
 
 
 export default ForgetPasswordModel

@@ -246,7 +246,7 @@ export default function MembersPage() {
                             <TableCell align="left">{role}</TableCell>
                             {auth.user.role?.toLowerCase() === 'leader' && auth.user.email !== email && (<TableCell align="center">
                               <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row)}>
-                                <Iconify icon={'eva:more-vertical-fill'} />
+                                <Iconify icon="eva:more-vertical-fill" />
                               </IconButton>
                             </TableCell>)}
 
@@ -318,11 +318,11 @@ export default function MembersPage() {
         }}
       >
         <MenuItem sx={{ color: 'error.main' }} onClick={() => { setOpen(false); setDeleteConfirmationOpen(true) }} >
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete Member
         </MenuItem>
         <MenuItem sx={{ color: 'success.main' }} onClick={() => { setOpen(false) }} >
-          <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
+          <Iconify icon="mdi:pencil" sx={{ mr: 2 }} />
           Update Member
         </MenuItem>
       </Popover>

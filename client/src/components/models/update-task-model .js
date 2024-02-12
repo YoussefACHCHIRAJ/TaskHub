@@ -30,7 +30,7 @@ function getStyles(member, responsables, theme) {
     };
 }
 
-const UpdateTaskModel = ({
+function UpdateTaskModel({
     openUpdate,
     setOpenUpdate,
     members,
@@ -39,7 +39,7 @@ const UpdateTaskModel = ({
     taskSelected,
     refetchTasks,
     tasks
-}) => {
+}) {
     const theme = useTheme();
     const { auth } = useAuthContext()
 

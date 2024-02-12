@@ -12,14 +12,14 @@ import {
 import useDeleteTask from '../../hooks/useDeleteTask';
 
 
-const DeleteTaskModel = ({
+function DeleteTaskModel({
     deleteConfirmationOpen,
     setDeleteConfirmationOpen,
     taskSelected,
     setOpenSnackbar,
     setSnackbarMsg,
     refetchTasks,
-}) => {
+}) {
     const { isError, error, isLoading, mutate: deleteTask } = useDeleteTask({
         onSuccess: () => {
             setOpenSnackbar(true);

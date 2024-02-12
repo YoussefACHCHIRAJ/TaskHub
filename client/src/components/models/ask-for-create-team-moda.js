@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import CreateTeamModal from './create-team-modal'
 
-const AskForCreateTeamModal = () => {
+function AskForCreateTeamModal() {
     const [open, setOpen] = useState(false);
     return (
         <>
@@ -22,7 +22,7 @@ const AskForCreateTeamModal = () => {
              openModal ={open}
              setOpenModal ={setOpen}
              setOpenSnackbar ={() => {}}
-             setSnackbarMsg ={''}
+             setSnackbarMsg =""
 
             />
         </>

@@ -15,14 +15,14 @@ import {
 import useStoreMember from '../../hooks/useStoreMember';
 import Iconify from '../iconify';
 
-const AddMemberModel = ({
+function AddMemberModel({
     openModal,
     setOpenModal,
     setOpenSnackbar,
     setSnackbarMsg,
     refetchMembers,
     roles
-}) => {
+}) {
     const [showPassword, setShowPassword] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');

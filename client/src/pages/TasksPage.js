@@ -198,11 +198,11 @@ export default function TaskPage() {
         }}
       >
         <MenuItem sx={{ color: 'error.main' }} onClick={() => { setDeleteConfirmationOpen(true); setOpen(false) }} >
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete task
         </MenuItem>
         <MenuItem sx={{ color: 'success.main' }} onClick={() => { setOpenUpdate(true); setOpen(false) }} >
-          <Iconify icon={'mdi:pencil'} sx={{ mr: 2 }} />
+          <Iconify icon="mdi:pencil" sx={{ mr: 2 }} />
           Update task
         </MenuItem>
       </Popover>

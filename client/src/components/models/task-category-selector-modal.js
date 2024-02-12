@@ -4,7 +4,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { FormHelperText } from '@mui/material';
 
-const TaskCategorySelectorModal = ({ category, setCategory }) => {
+function TaskCategorySelectorModal({ category, setCategory }) {
 
   return (
     <div>

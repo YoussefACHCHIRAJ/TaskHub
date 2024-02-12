@@ -9,12 +9,12 @@ import {
 } from '@mui/material'
 import useStoreTeam from '../../hooks/useStoreTeam';
 
-const CreateTeamModal = ({
+function CreateTeamModal({
     openModal,
     setOpenModal,
     setOpenSnackbar,
     setSnackbarMsg,
-}) => {
+}) {
     const [name, setName] = useState('');
     const [role, setRole] = useState('');
     const [roles, setRoles] = useState(new Set());

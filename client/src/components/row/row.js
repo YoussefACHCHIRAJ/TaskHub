@@ -6,7 +6,7 @@ import Iconify from '../iconify/Iconify';
 import useAuthContext from '../../hooks/useAuthContext';
 
 
-const Row = ({ row, handleOpenMenu, options, selectedCategory }) => {
+function Row({ row, handleOpenMenu, options, selectedCategory }) {
 
     const { auth } = useAuthContext()
     const [open, setOpen] = useState(false);
@@ -54,7 +54,7 @@ const Row = ({ row, handleOpenMenu, options, selectedCategory }) => {
                 </TableCell>
                 {auth.user.role.toLowerCase() === 'leader' && options && (<TableCell align="center">
                     <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row)}>
-                        <Iconify icon={'eva:more-vertical-fill'} />
+                        <Iconify icon="eva:more-vertical-fill" />
                     </IconButton>
                 </TableCell>)}
             </TableRow>

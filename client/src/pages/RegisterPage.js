@@ -56,7 +56,7 @@ export default function Register() {
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Already have an account? {''}
+              Already have an account? 
               <Link to='/login' className='text-blue-600 font-semibold'>Sign in</Link>
 
             </Typography>

@@ -12,14 +12,14 @@ import {
 import useDeleteMember from '../../hooks/useDeleteMember';
 
 
-const DeleteMemberModal = ({
+function DeleteMemberModal({
     deleteConfirmationOpen,
     setDeleteConfirmationOpen,
     memberSelected,
     setOpenSnackbar,
     setSnackbarMsg,
     refetchMembers,
-}) => {
+}) {
     const { isError, error, isLoading, mutate: deleteMember } = useDeleteMember({
         onSuccess: () => {
             setOpenSnackbar(true);

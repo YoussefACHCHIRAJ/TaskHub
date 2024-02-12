@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import useAuthContext from '../hooks/useAuthContext'
 import Iconify from '../components/iconify'
 
-const ProfilePage = () => {
+function ProfilePage() {
     const { auth } = useAuthContext();
     return (
         <>

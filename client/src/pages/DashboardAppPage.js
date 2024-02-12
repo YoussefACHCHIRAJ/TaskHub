@@ -71,15 +71,15 @@ export default function DashboardAppPage() {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Members" total={teamMembersCount} icon={'ri:user-fill'} />
+            <AppWidgetSummary title="Members" total={teamMembersCount} icon="ri:user-fill" />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Tasks" color="error" total={tasksCount} icon={'fluent:tasks-app-20-filled'} />
+            <AppWidgetSummary title="Tasks" color="error" total={tasksCount} icon="fluent:tasks-app-20-filled" />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Your Tasks" color="success" total={authUserTaskCount} icon={'fluent:tasks-app-20-filled'} />
+            <AppWidgetSummary title="Your Tasks" color="success" total={authUserTaskCount} icon="fluent:tasks-app-20-filled" />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>

@@ -16,7 +16,7 @@ const authReducer = (state, action) => {
     }
 }
 
-export const AuthContextProvider = (props) => {
+export function AuthContextProvider(props) {
     const [state, dispatch] = useReducer(authReducer, {
         auth: JSON.parse(localStorage.getItem('auth')) || null
     });

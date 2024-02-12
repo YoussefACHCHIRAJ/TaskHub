@@ -29,14 +29,14 @@ function getStyles(member, responsables, theme) {
     };
 }
 
-const CreateTaskModel = ({
+function CreateTaskModel({
     openModal,
     setOpenModal,
     members,
     setOpenSnackbar,
     setSnackbarMsg,
     reftechTasksData
-}) => {
+}) {
 
 
 
