@@ -48,11 +48,11 @@ export default function LoginPage() {
           }}
         />
 
-        
+
 
         <Container maxWidth="sm">
           <StyledContent>
-          <Typography variant="h3" sx={{mt: 2, mb: 2 }}>
+            <Typography variant="h3" sx={{ mt: 2, mb: 2 }}>
               Hi, Welcome Back
             </Typography>
             <Typography variant="h4" gutterBottom>
@@ -60,8 +60,8 @@ export default function LoginPage() {
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Don&apos;t have an account? 
-                <Link to='/register' className='text-blue-600 font-semibold'>Get started</Link>
+              Don&apos;t have an account?
+              <Link to='/register' className='text-blue-600 font-semibold'>Get started</Link>
             </Typography>
 
             <LoginForm />

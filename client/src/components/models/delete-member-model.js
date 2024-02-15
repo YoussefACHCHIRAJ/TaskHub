@@ -1,5 +1,6 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
+import { useQueryClient } from 'react-query';
+
 import {
     Button,
     Dialog,
@@ -9,7 +10,8 @@ import {
     DialogActions,
     Typography
 } from '@mui/material'
-import useDeleteMember from '../../hooks/useDeleteMember';
+
+import { useDeleteMember, useAuthContext } from '../../hooks';
 
 
 function DeleteMemberModal({
@@ -18,23 +20,27 @@ function DeleteMemberModal({
     memberSelected,
     setOpenSnackbar,
     setSnackbarMsg,
-    refetchMembers,
 }) {
+
+    const { auth } = useAuthContext();
+
+    const queryClient = useQueryClient();
+
     const { isError, error, isLoading, mutate: deleteMember } = useDeleteMember({
         onSuccess: () => {
             setOpenSnackbar(true);
             setSnackbarMsg('This member was deleted.')
             setDeleteConfirmationOpen(false);
-            refetchMembers()
+            queryClient.invalidateQueries(["getMembers", auth?.user?._id])
             setTimeout(() => {
                 setOpenSnackbar(false);
             }, 1500);
         }
     });
-    const submitDeleteTask = async () => {
+    const submitDeleteTask = () => {
         deleteMember(memberSelected?.id);
-
     }
+
     return (
         <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>
             <DialogTitle>Delete Task</DialogTitle>

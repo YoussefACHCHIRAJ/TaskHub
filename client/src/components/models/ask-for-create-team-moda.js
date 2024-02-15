@@ -18,11 +18,11 @@ function AskForCreateTeamModal() {
                 </div>
             </div>
 
-            <CreateTeamModal 
-             openModal ={open}
-             setOpenModal ={setOpen}
-             setOpenSnackbar ={() => {}}
-             setSnackbarMsg =""
+            <CreateTeamModal
+                openModal={open}
+                setOpenModal={setOpen}
+                setOpenSnackbar={() => { }}
+                setSnackbarMsg=""
 
             />
         </>

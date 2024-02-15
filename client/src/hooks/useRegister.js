@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthContext from "./useAuthContext";
 
 
-export const useRegister = () => {
+ const useRegister = () => {
     const { dispatch } = useAuthContext();
     const navigate = useNavigate();
 
@@ -24,3 +24,4 @@ export const useRegister = () => {
     return query;
 }
 
+export default useRegister;

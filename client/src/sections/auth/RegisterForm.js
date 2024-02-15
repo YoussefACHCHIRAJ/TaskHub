@@ -6,7 +6,7 @@ import { LoadingButton } from '@mui/lab';
 
 // components
 import Iconify from '../../components/iconify';
-import { useRegister } from '../../hooks/useRegister';
+import { useRegister } from '../../hooks';
 
 // ----------------------------------------------------------------------
 

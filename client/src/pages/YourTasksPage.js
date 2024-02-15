@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import {
@@ -18,14 +18,17 @@ import {
     AlertTitle,
 } from '@mui/material';
 
-import useGetTasks from '../hooks/useGetTasks';
+import { useGetTasks, useAuthContext } from '../hooks';
 import { fDate } from '../utils/formatTime';
 
-import Scrollbar from '../components/scrollbar';
-import Row from '../components/row/row';
 
-import useAuthContext from '../hooks/useAuthContext';
-import { AskForCreateTeamModal, TaskCategorySelectorModal } from '../components/models';
+import Row from '../components/row/row';
+import {
+    AskForCreateTeamModal,
+    ErrorMessageModel,
+    TaskCategorySelectorModal
+} from '../components/models';
+import Scrollbar from '../components/scrollbar';
 
 
 
@@ -37,7 +40,7 @@ function createData(id, title, start, due, description, responsibleUsers) {
         due,
         description,
         responsibleUsers,
-        
+
     };
 }
 
@@ -47,32 +50,30 @@ export default function YourTasksPage() {
 
     const { data, error, isLoading, isError } = useGetTasks();
 
-    const [category, setCategory] = React.useState('All');
+    const [category, setCategory] = useState('All');
 
-    let rows = [];
-    
-    if (!isLoading && data?.tasks) {
-        rows = data?.tasks?.filter(task => task.responsibleUsers.some(user => user?._id === auth?.user?._id))
-            .map(task => createData(
-                task._id,
-                task.title,
-                fDate(task.dateStart),
-                fDate(task.deadline),
-                task.description,
-                task.responsibleUsers,
+    const [rows, setRows] = useState([])
+
+
+    useEffect(() => {
+        if (!isLoading && data) {
+            const rows = data?.tasks?.filter(task => task.responsibleUsers.some(user => user?._id === auth?.user?._id))
+                .map(task => createData(
+                    task._id,
+                    task.title,
+                    fDate(task.dateStart),
+                    fDate(task.deadline),
+                    task.description,
+                    task.responsibleUsers,
                 )
-            );
-    }
+                );
+            setRows(rows);
+        }
+    }, [isLoading, data, auth?.user?._id]);
+
     if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 
-    if (isError) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
-        <Alert severity="error">
-            <AlertTitle>error</AlertTitle>
-            {error.message}<br />
-            This could be due a server issue.<br />
-            Check if you are connecting to the server or internet.<br />
-        </Alert>
-    </Typography>)
+    if (isError) return <ErrorMessageModel message={error?.message} />;
 
 
     if (!auth?.user?.team) {

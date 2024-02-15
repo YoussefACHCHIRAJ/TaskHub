@@ -5,15 +5,14 @@ import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 // mocks_
 import Account from '../../../_mock/account';
-import { useLogout } from '../../../hooks/useLogout';
 // hooks
-import useAuthContext from "../../../hooks/useAuthContext";
+import { useLogout, useAuthContext } from '../../../hooks';
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
-  const [open, setOpen] = useState(null);
-  const { logout } = useLogout();
   const { auth } = useAuthContext();
+  const logout = useLogout();
+  const [open, setOpen] = useState(null);
 
   return (
     <>

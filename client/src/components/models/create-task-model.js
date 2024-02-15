@@ -1,16 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query';
 import dayjs from 'dayjs';
-import { Box, Button, FormControl, InputLabel, MenuItem, Modal, OutlinedInput, Select, Stack, TextField, Typography } from '@mui/material'
+
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useTheme } from '@mui/material/styles';
-import useStoreTask from '../../hooks/useStoreTask';
-import useAuthContext from '../../hooks/useAuthContext';
+
+import {
+    Box,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Modal,
+    OutlinedInput,
+    Select,
+    Stack,
+    TextField,
+    Typography
+} from '@mui/material'
+
+import { useStoreTask, useAuthContext } from '../../hooks';
+import { socket } from '../../App';
+
 
 
 const today = dayjs();
+
 const ITEM_HEIGHT = 48;
+
 const ITEM_PADDING_TOP = 8;
+
 const MenuProps = {
     PaperProps: {
         style: {
@@ -35,16 +55,20 @@ function CreateTaskModel({
     members,
     setOpenSnackbar,
     setSnackbarMsg,
-    reftechTasksData
 }) {
 
-
+    const queryClient = useQueryClient();
 
     const theme = useTheme();
+
     const { auth } = useAuthContext()
+
     const [title, setTitle] = useState('');
+
     const [description, setDescription] = useState('');
+
     const [dateStart, setDateStart] = useState('');
+
     const [deadline, setDeadline] = useState('');
 
     const [responsables, setResponsables] = useState([]);
@@ -54,14 +78,13 @@ function CreateTaskModel({
             handleCloseModal();
             setOpenSnackbar(true);
             setSnackbarMsg('This task was add.');
-            reftechTasksData();
+            queryClient.invalidateQueries(["gettasks", auth?.user?._id])
+
             setTimeout(() => {
                 setSnackbarMsg(false);
             }, 1500);
         }
     });
-
-    console.log("error creation: ", error);
 
     const handleChangeResponsables = (event) => {
         const {
@@ -82,11 +105,18 @@ function CreateTaskModel({
 
     const submitTasks = event => {
         event.preventDefault();
+
         const responsablesArray = responsables.length > 0 ? responsables : null;
-        storeNewTask(
+
+        const newTask = storeNewTask(
             { title, description, dateStart, deadline, responsables: responsablesArray, teamId: auth.user.team });
+           
+
+        socket.emit("new-task:store-notification", responsablesArray);
 
     }
+
+
     return (
         <Modal open={openModal} onClose={handleCloseModal}>
             <Box sx={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', width: { sx: '80%', sm: '65%' }, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: '10px' }}>
@@ -157,7 +187,7 @@ function CreateTaskModel({
                                                 helperText: error ? error.dateStart : '',
                                                 FormHelperTextProps: {
                                                     sx: {
-                                                        color: 'red', // Change this to your desired color
+                                                        color: 'red',
                                                     },
                                                 },
                                             },

@@ -6,15 +6,15 @@ const useGetTasks = () => {
     const { auth } = useAuthContext();
 
     const query = useQuery({
-        queryKey: ["gettasks"],
+        queryKey: ["gettasks", auth?.user?._id],
         queryFn: async () => {
             try {
-                const { data } = await axios.get(`http://localhost:3001/tasks/${auth.user._id}`, {
-                    headers: { 'authorization': `bearer ${auth.token}` }
+                const { data } = await axios.get(`http://localhost:3001/tasks/${auth?.user?._id}`, {
+                    headers: { 'authorization': `bearer ${auth?.token}` }
                 });
                 return data;
             } catch (error) {
-                throw new Error(`Failed load members. ${error}`);
+                throw new Error(`Failed load tasks. ${error?.response?.data?.authorization?.message}`);
             }
         }
     });

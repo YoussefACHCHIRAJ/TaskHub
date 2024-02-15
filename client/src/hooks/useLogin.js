@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthContext from "./useAuthContext";
 
 
-export const useLogin = () => {
+ const useLogin = () => {
 
     const { dispatch } = useAuthContext()
     const navigate = useNavigate();
@@ -31,3 +31,4 @@ export const useLogin = () => {
     return query
 }
 
+export default useLogin;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+
 import {
     Typography,
     TextField,
@@ -7,7 +8,8 @@ import {
     Stack,
     Button,
 } from '@mui/material'
-import useStoreTeam from '../../hooks/useStoreTeam';
+
+import { useStoreTeam } from '../../hooks';
 
 function CreateTeamModal({
     openModal,

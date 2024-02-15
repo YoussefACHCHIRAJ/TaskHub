@@ -6,7 +6,7 @@ import { LoadingButton } from '@mui/lab';
 
 // components
 import Iconify from '../../components/iconify';
-import { useLogin } from '../../hooks/useLogin';
+import { useLogin } from '../../hooks';
 import ForgetPasswordModel from '../../components/models/forget-password-model';
 
 

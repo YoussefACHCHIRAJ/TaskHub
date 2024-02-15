@@ -1,17 +1,36 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query';
+
 import dayjs from 'dayjs';
-import { Box, Button, FormControl, InputLabel, MenuItem, Modal, OutlinedInput, Select, Stack, TextField, Typography } from '@mui/material'
+
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useTheme } from '@mui/material/styles';
-import useUpdateTask from '../../hooks/useUpdateTask';
-import useAuthContext from '../../hooks/useAuthContext';
+import {
+    Box,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Modal,
+    OutlinedInput,
+    Select,
+    Stack,
+    TextField,
+    Typography
+} from '@mui/material'
+
+import { useUpdateTask, useAuthContext } from '../../hooks';
+
 
 
 const today = dayjs();
+
 const ITEM_HEIGHT = 48;
+
 const ITEM_PADDING_TOP = 8;
+
 const MenuProps = {
     PaperProps: {
         style: {
@@ -37,15 +56,21 @@ function UpdateTaskModel({
     setOpenSnackbar,
     setSnackbarMsg,
     taskSelected,
-    refetchTasks,
     tasks
 }) {
+
     const theme = useTheme();
+
     const { auth } = useAuthContext()
 
+    const queryClient = useQueryClient();
+
     const [title, setTitle] = useState('');
+
     const [description, setDescription] = useState('');
+
     const [dateStart, setDateStart] = useState('');
+
     const [deadline, setDeadline] = useState('');
 
     const [responsables, setResponsables] = useState([]);
@@ -55,7 +80,7 @@ function UpdateTaskModel({
             handleCloseModal();
             setOpenSnackbar(true);
             setSnackbarMsg('This task was updated.');
-            refetchTasks();
+            queryClient.invalidateQueries(["gettasks", auth?.user?._id])
             setTimeout(() => {
                 setOpenSnackbar(false);
             }, 1500);

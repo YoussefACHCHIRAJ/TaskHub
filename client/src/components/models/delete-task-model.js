@@ -1,15 +1,15 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
+import { useQueryClient } from 'react-query';
 import {
     Button,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogContentText,
-    DialogActions, 
+    DialogActions,
     Typography
 } from '@mui/material'
-import useDeleteTask from '../../hooks/useDeleteTask';
+import { useDeleteTask, useAuthContext } from '../../hooks';
 
 
 function DeleteTaskModel({
@@ -18,20 +18,25 @@ function DeleteTaskModel({
     taskSelected,
     setOpenSnackbar,
     setSnackbarMsg,
-    refetchTasks,
 }) {
+
+    const queryClient = useQueryClient();
+
+    const { auth } = useAuthContext()
+
     const { isError, error, isLoading, mutate: deleteTask } = useDeleteTask({
         onSuccess: () => {
             setOpenSnackbar(true);
             setSnackbarMsg('This task was deleted.')
             setDeleteConfirmationOpen(false);
-            refetchTasks()
+            queryClient.invalidateQueries(["gettasks", auth?.user?._id])
             setTimeout(() => {
                 setOpenSnackbar(false);
             }, 1500);
         }
     });
-    const submitDeleteTask = async () => {
+
+    const submitDeleteTask = () => {
         deleteTask(taskSelected?.id);
 
     }

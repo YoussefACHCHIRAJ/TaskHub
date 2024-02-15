@@ -14,7 +14,7 @@ const useGetDefaultInfo = (payload) => {
                 return data;
 
             } catch (error) {
-                throw new Error("Failed get the default info. ", error);
+                throw new Error(`Failed load default info. ${error?.response?.data?.authorization?.message}`);
             }
         }
     });

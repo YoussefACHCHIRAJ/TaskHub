@@ -6,9 +6,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
-  Paper,
   Card,
   Container,
   MenuItem,
@@ -20,19 +18,42 @@ import {
   Snackbar,
   Alert,
   AlertTitle,
+  TablePagination,
 } from '@mui/material';
 
-import { DeleteTaskModel, CreateTaskModel, UpdateTaskModel, AskForCreateTeamModal, TaskCategorySelectorModal } from '../components/models';
-import useGetTasks from '../hooks/useGetTasks';
-import { fDate } from '../utils/formatTime';
+import {
+  DeleteTaskModel,
+  CreateTaskModel,
+  UpdateTaskModel,
+  AskForCreateTeamModal,
+  TaskCategorySelectorModal,
+  ErrorMessageModel
+} from '../components/models';
 
-import Scrollbar from '../components/scrollbar';
+import { fDate } from '../utils/formatTime';
+import Iconify from '../components/iconify';
+
 import Row from '../components/row/row';
 
-import Iconify from '../components/iconify';
-import useAuthContext from '../hooks/useAuthContext';
+import { useGetTasks, useAuthContext } from '../hooks';
+
+import { UserListHead } from '../sections/@dashboard/user';
+import Scrollbar from '../components/scrollbar';
 
 
+const TABLE_HEAD = [
+  { id: 'responsibles', label: ' ', alignRight: false },
+  { id: 'Task title', label: 'Task title', alignRight: false },
+  { id: 'Start', label: 'Start', alignRight: false },
+  { id: 'Due', label: 'Due', alignRight: false },
+  { id: 'Status', label: 'Status ', alignRight: false },
+  { id: 'actions', label: ' ', alignRight: false },
+];
+
+
+// function applyCategoryFilter(array, filter){
+//   return array.filter(item => item?.)
+// }
 
 function createData(id, title, start, due, description, responsibleUsers) {
   return {
@@ -42,31 +63,46 @@ function createData(id, title, start, due, description, responsibleUsers) {
     due,
     description,
     responsibleUsers,
-    };
+  };
 }
 
 
 export default function TaskPage() {
   const { auth } = useAuthContext();
+
   const [open, setOpen] = useState(false);
+
   const [openUpdate, setOpenUpdate] = useState(false);
+
+  const [page, setPage] = useState(0);
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
   const [openModal, setOpenModal] = useState(false);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   const [taskSelected, setTaskSelected] = useState(null);
+
   const [rows, setRows] = useState([]);
+
   const [members, setMembers] = useState([]);
+
   const [snackbarMsg, setSnackbarMsg] = useState('');
+
   const [category, setCategory] = useState('All');
 
-  const { data, error, isLoading, isError, refetch: reftechTasksData } = useGetTasks();
+  const { data, error, isLoading, isError } = useGetTasks();
+
+
 
   useEffect(() => {
-    if (!isLoading && data) {
-      const newRows = data?.tasks && data?.tasks?.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers));
+    if (!isLoading) {
+      const newRows = data?.tasks?.map(task => createData(task._id, task.title, fDate(task.dateStart), fDate(task.deadline), task.description, task.responsibleUsers));
       setRows(newRows);
-      const newMembers = data?.teamMembers && data.teamMembers.map(member => ({ id: member._id, name: member.name }));
+      const newMembers = data?.teamMembers?.map(member => ({ id: member._id, name: member.name }));
       setMembers(newMembers);
     }
   }, [isLoading, data, category]);
@@ -81,16 +117,18 @@ export default function TaskPage() {
     setTaskSelected(null);
   };
 
-  if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-  if (isError) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
-    <Alert severity="error">
-      <AlertTitle>error</AlertTitle>
-      {error.message}<br />
-      This could be due a server issue.<br />
-      Check if you are connecting to the server or internet.<br />
-    </Alert>
-  </Typography>)
+  const handleChangeRowsPerPage = (event) => {
+    setPage(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
 
   if (!auth?.user?.team) {
     return (
@@ -110,7 +148,7 @@ export default function TaskPage() {
           </Typography>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <TaskCategorySelectorModal category={category} setCategory={setCategory} />
-            {auth?.user?.role?.toLowerCase() === 'leader' && (<Button className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
+            {auth?.user?.role?.toLowerCase() === 'leader' && (<Button disabled={isError} className='bg-black hover:bg-gray-900' variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={() => setOpenModal(true)}>
               New Task
             </Button>)}
           </Stack>
@@ -122,7 +160,6 @@ export default function TaskPage() {
           members={members}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
-          reftechTasksData={reftechTasksData}
         />
         <DeleteTaskModel
           deleteConfirmationOpen={deleteConfirmationOpen}
@@ -130,7 +167,6 @@ export default function TaskPage() {
           taskSelected={taskSelected}
           setOpenSnackbar={setOpenSnackbar}
           setSnackbarMsg={setSnackbarMsg}
-          refetchTasks={reftechTasksData}
         />
 
         <UpdateTaskModel
@@ -141,42 +177,51 @@ export default function TaskPage() {
           setSnackbarMsg={setSnackbarMsg}
           taskSelected={taskSelected}
           tasks={rows}
-          refetchTasks={reftechTasksData}
         />
 
 
         {isLoading ? <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink /> :
-          rows.length === 0 ?
-            <Alert severity="info">
-              <AlertTitle>info</AlertTitle>
-              There is no Tasks
-            </Alert>
-            :
-            <Card>
-              <Scrollbar>
-                <TableContainer component={Paper}>
-                  <Table aria-label="collapsible table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell />
-                        <TableCell>Task title</TableCell>
-                        <TableCell align="center">Start</TableCell>
-                        <TableCell align="center">Due</TableCell>
-                        <TableCell align="center">Status</TableCell>
-                        {auth?.user?.role?.toLowerCase() === 'leader' && (<TableCell align="center"> </TableCell>)}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {rows.map((row) => (
-                        <Row key={row.id} row={row} selectedCategory={category} handleOpenMenu={handleOpenMenu} options={Boolean(true)} />
-                      ))
-                      }
-                    </TableBody>
-                  </Table>
-                </TableContainer>
 
-              </Scrollbar>
-            </Card>
+          isError ? <ErrorMessageModel message={error?.message} /> :
+            rows.length === 0 ?
+              <Alert severity="info">
+                <AlertTitle>info</AlertTitle>
+                There is no Tasks
+              </Alert> :
+              (<Card>
+
+                <Scrollbar>
+                  <TableContainer sx={{ minWidth: 800 }}>
+                    <Table>
+                      <UserListHead
+                        headLabel={auth.user?.role?.toLowerCase() === 'leader' ? TABLE_HEAD : TABLE_HEAD.slice(0, -1)}
+                        rowCount={rows.length}
+                      />
+                      <TableBody>
+                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (<Row key={row?.id} row={row} selectedCategory={category} handleOpenMenu={handleOpenMenu} options={Boolean(true)} />)
+                        )}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 53 * emptyRows }}>
+                            <TableCell colSpan={6} />
+                          </TableRow>
+                        )}
+                      </TableBody>
+
+
+                    </Table>
+                  </TableContainer>
+                </Scrollbar>
+
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Card>)
         }
       </Container>
       <Popover
@@ -207,7 +252,7 @@ export default function TaskPage() {
         </MenuItem>
       </Popover>
 
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+      <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
           {snackbarMsg}
         </Alert>

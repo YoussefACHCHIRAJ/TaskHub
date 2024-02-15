@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useQueryClient } from 'react-query';
+
 import {
     Typography, MenuItem,
     InputLabel,
@@ -12,28 +14,38 @@ import {
     Stack,
     Button,
 } from '@mui/material'
-import useStoreMember from '../../hooks/useStoreMember';
 import Iconify from '../iconify';
+
+import { useStoreMember, useAuthContext } from '../../hooks';
 
 function AddMemberModel({
     openModal,
     setOpenModal,
     setOpenSnackbar,
     setSnackbarMsg,
-    refetchMembers,
     roles
 }) {
+
+    const { auth } = useAuthContext();
+
+    const queryClient = useQueryClient();
+
     const [showPassword, setShowPassword] = useState(false);
+
     const [name, setName] = useState('');
+
     const [email, setEmail] = useState('');
+
     const [password, setPassword] = useState('');
+
     const [role, setRole] = useState('');
+
     const { isError, error, isLoading, mutate: storeMember, reset } = useStoreMember({
         onSuccess: () => {
             setOpenModal(false);
             setOpenSnackbar(true);
             setSnackbarMsg('This member was add.');
-            refetchMembers();
+            queryClient.invalidateQueries(["getMembers", auth?.user?._id])
             setTimeout(() => {
                 setOpenSnackbar(false);
             }, 2000);

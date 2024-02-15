@@ -1,7 +1,16 @@
 import React from 'react'
-import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { Helmet } from 'react-helmet-async'
-import useAuthContext from '../hooks/useAuthContext'
+
+import {
+    Box,
+    Button,
+    Container,
+    Divider,
+    Stack,
+    Typography
+} from '@mui/material'
+
+import { useAuthContext } from '../hooks'
 import Iconify from '../components/iconify'
 
 function ProfilePage() {

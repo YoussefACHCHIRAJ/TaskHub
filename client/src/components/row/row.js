@@ -8,16 +8,23 @@ import useAuthContext from '../../hooks/useAuthContext';
 
 function Row({ row, handleOpenMenu, options, selectedCategory }) {
 
+  
     const { auth } = useAuthContext()
+  
     const [open, setOpen] = useState(false);
 
     const taskStatus = (start, due) => {
+       
         const today = new Date();
+       
         const startDate = new Date(start);
+       
         const dueDate = new Date(due);
+       
         if (startDate > today) {
             return { status: 'Pending', statusColor: 'Orange', statusIcon: 'material-symbols:pending' }
         }
+        
         if (startDate <= today && dueDate > today) {
             return { status: 'In Progress', statusColor: 'green', statusIcon: 'grommet-icons:in-progress' }
         }
@@ -43,16 +50,16 @@ function Row({ row, handleOpenMenu, options, selectedCategory }) {
                 <TableCell component="th" scope="row">
                     {row.title}
                 </TableCell>
-                <TableCell align="center">{row.start}</TableCell>
-                <TableCell align="center">{row.due}</TableCell>
-                <TableCell align="center">
+                <TableCell align="left">{row.start}</TableCell>
+                <TableCell align="left">{row.due}</TableCell>
+                <TableCell align="left">
                     <Typography sx={{ color: statusColor }}>
-                        <Stack direction="row" alignItems="center" justifyContent="center" gap={1}>
+                        <Stack direction="row" alignItems="center" justifyContent="left" gap={1}>
                             {status} <Iconify icon={statusIcon} className='w-4 h-4' />
                         </Stack>
                     </Typography>
                 </TableCell>
-                {auth.user.role.toLowerCase() === 'leader' && options && (<TableCell align="center">
+                {auth.user.role.toLowerCase() === 'leader' && options && (<TableCell align="left">
                     <IconButton size="md" color="inherit" onClick={e => handleOpenMenu(e, row)}>
                         <Iconify icon="eva:more-vertical-fill" />
                     </IconButton>

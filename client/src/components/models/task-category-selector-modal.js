@@ -1,8 +1,11 @@
 import React from 'react'
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { FormHelperText } from '@mui/material';
+
+import { 
+  FormHelperText,
+  MenuItem,
+  FormControl,
+  Select
+} from '@mui/material';
 
 function TaskCategorySelectorModal({ category, setCategory }) {
 

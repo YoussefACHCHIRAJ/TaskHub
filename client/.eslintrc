@@ -4,27 +4,19 @@
     "browser": true,
     "es2021": true
   },
-  "extends": [
-    "airbnb",
-    "plugin:jsx-a11y/recommended",
-    "plugin:react-hooks/recommended",
-    "prettier"
-  ],
-  "plugins": [
-    "react",
-    "react-hooks",
-    "prettier"
-  ],
+  "extends": ["airbnb", "plugin:jsx-a11y/recommended", "plugin:react-hooks/recommended", "prettier"],
+  "plugins": ["react", "react-hooks", "prettier"],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "babelOptions": {
-      "presets": ["@babel/preset-react"]
-   },
     "ecmaVersion": 8,
     "requireConfigFile": false,
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
-      "impliedStrict": true
+      "impliedStrict": true,
+      "jsx": true
+    },
+    "babelOptions": {
+      "presets": ["@babel/preset-env", "@babel/preset-react"]
     }
   },
   "rules": {
@@ -35,7 +27,7 @@
     "react/jsx-key": 1,
     "import/no-cycle": 0,
     "arrow-body-style": 1,
-    "react/prop-types": 0,
+    "react/prop-types": 1,
     "no-param-reassign": 0,
     "no-nested-ternary": 0,
     "default-param-last": 0,

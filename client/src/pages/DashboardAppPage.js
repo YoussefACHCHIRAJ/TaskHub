@@ -1,10 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography, Alert, AlertTitle, CircularProgress } from '@mui/material';
-// components
-// import Iconify from '../components/iconify';
+
 // sections
 import {
   AppNewsUpdate,
@@ -12,8 +12,10 @@ import {
   AppWidgetSummary,
   AppCurrentSubject,
 } from '../sections/@dashboard/app';
-import useGetDefaultInfo from '../hooks/useGetDefaultInfo';
-import useAuthContext from '../hooks/useAuthContext';
+
+import { useGetDefaultInfo, useAuthContext } from '../hooks';
+
+import { ErrorMessageModel } from '../components/models';
 import { fDateTime } from '../utils/formatTime';
 
 // ----------------------------------------------------------------------
@@ -35,24 +37,19 @@ const CHARTMONTHS = [
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+
   const { auth } = useAuthContext();
-  const { error, isLoading, data: defaultInfo } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${auth.user._id}`);
+
+  const { error, isLoading, data: defaultInfo, isError } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${auth.user._id}`);
 
   if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 
-  if (error) return (<Typography variant='h6' color='error' sx={{ paddingInline: '3em' }}>
-    <Alert severity="error">
-      <AlertTitle>error</AlertTitle>
-      {error.message}<br />
-      This could be due a server issue.<br />
-      Check if you are connecting to the server or internet.<br />
-    </Alert>
-  </Typography>)
+  if (isError) return <ErrorMessageModel message={error?.message} />;
 
   const { tasksCount, teamMembersCount, authUserTaskCount, tasks, chartTask } = defaultInfo;
 
 
-  
+
   return (
     <>
       <Helmet>
