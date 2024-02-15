@@ -8,8 +8,6 @@ const tasks = async (req, res) => {
         const id = new mongoose.Types.ObjectId(req.params.id);
         const { team } = await User.findById(id).select("team");
 
-        console.log({team});
-
         const tasks = await Task.aggregate([
             {
                 $match: { team } // Match tasks by team ID

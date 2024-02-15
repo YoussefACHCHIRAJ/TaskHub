@@ -25,10 +25,7 @@ class Authorization {
                 Authorization.authorizationError.message = 'Authorization token is missing.'
                 return res.status(401).json({authorization: Authorization.authorizationError});
             }
-
-            const token = authorization.split(' ')[1];
             
-            const decoded = await Authorization.verifyToken(token);
             next();
         } catch (error) {
             Authorization.authorizationError.message = 'Unauthorized. Failed Authentification' + error
