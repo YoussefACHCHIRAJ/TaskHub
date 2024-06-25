@@ -38,9 +38,8 @@ const CHARTMONTHS = [
 export default function DashboardAppPage() {
   const theme = useTheme();
 
-  const { auth } = useAuthContext();
 
-  const { error, isLoading, data: defaultInfo, isError } = useGetDefaultInfo(`http://localhost:3001/defaultInfo/${auth.user._id}`);
+  const { error, isLoading, data: defaultInfo, isError } = useGetDefaultInfo();
 
   if (isLoading) return <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disableShrink />
 

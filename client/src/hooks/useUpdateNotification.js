@@ -1,13 +1,14 @@
 import { useMutation } from "react-query"
 import axios from "axios";
 import useAuthContext from "./useAuthContext"
+import { axiosBase } from ".";
 
 const useUpdateNotification = () => {
     const { auth } = useAuthContext();
 
     const query = useMutation(async () => {
         try {
-            await axios.post(`http://localhost:3001/notifications/${auth?.user?._id}`, null, {
+            await axiosBase.post(`notifications/${auth?.user?._id}`, null, {
                 headers: { 'authorization': `bearer ${auth?.token}` }
             });
         } catch (error) {

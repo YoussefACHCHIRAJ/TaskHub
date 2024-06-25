@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation } from "react-query";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 const useStoreTeam = ({ onSuccess }) => {
     const { auth, dispatch } = useAuthContext();
@@ -8,7 +9,7 @@ const useStoreTeam = ({ onSuccess }) => {
     const query = useMutation(
         async (payload) => {
             try {
-                const { data } = await axios.post(`http://localhost:3001/team/store/${auth?.user?._id}`, payload, {
+                const { data } = await axiosBase.post(`team/store/${auth?.user?._id}`, payload, {
                     headers: { "Authorization": `bearer ${auth?.token}` }
                 });
                 const newAuth = {

@@ -1,6 +1,7 @@
 import { useQuery } from "react-query"
 import axios from "axios";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 const useGetMembers = () => {
     const { auth } = useAuthContext();
@@ -9,7 +10,7 @@ const useGetMembers = () => {
         queryKey: ["getMembers", auth?.user?._id],
         queryFn: async () => {
             try {
-                const { data } = await axios.get(`http://localhost:3001/member/${auth?.user?._id}`, {
+                const { data } = await axiosBase.get(`member/${auth?.user?._id}`, {
                     headers: { 'authorization': `bearer ${auth?.token}` }
                 });
                 return data;

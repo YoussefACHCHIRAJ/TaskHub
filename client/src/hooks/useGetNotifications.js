@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
 import axios from "axios";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 
 const useGetNotifications = () => {
@@ -10,7 +11,7 @@ const useGetNotifications = () => {
         queryKey: ["get notifications", auth?.user?._id],
         queryFn: async () => {
             try {
-                const { data } = await axios.get(`http://localhost:3001/notifications/${auth?.user?._id}`, {
+                const { data } = await axiosBase.get(`notifications/${auth?.user?._id}`, {
                     headers: { 'authorization': `bearer ${auth?.token}` }
                 });
                 console.log("hook: ", data?.notifications);

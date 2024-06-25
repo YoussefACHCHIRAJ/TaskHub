@@ -2,6 +2,7 @@ import axios from "axios";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 
  const useRegister = () => {
@@ -11,7 +12,7 @@ import useAuthContext from "./useAuthContext";
     const query = useMutation(
         async (payload) => {
             try {
-                const { data } = await axios.post('http://localhost:3001/auth/register', payload);
+                const { data } = await axiosBase.post(`auth/register`, payload);
                 localStorage.setItem('auth', JSON.stringify(data));
                 dispatch({ type: 'login', payload: data });
                 navigate('/dashboard/app');

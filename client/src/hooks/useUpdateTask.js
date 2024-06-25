@@ -1,13 +1,14 @@
 import axios from "axios";
 import { useMutation } from "react-query";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 const useUpdateTask = ({ onSuccess }) => {
     const { auth } = useAuthContext()
 
     const query = useMutation(async ({taskId, updatedTask }) => {
         try {
-            await axios.put(`http://localhost:3001/tasks/update/${taskId}`, updatedTask, {
+            await axiosBase.put(`tasks/update/${taskId}`, updatedTask, {
                 headers: {
                     "Authorization": `bearer ${auth.token}`
                 }

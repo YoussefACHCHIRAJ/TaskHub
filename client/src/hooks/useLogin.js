@@ -2,6 +2,7 @@ import { useMutation } from "react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 
  const useLogin = () => {
@@ -13,7 +14,7 @@ import useAuthContext from "./useAuthContext";
         async (payload) => {
             try {
             
-                const { data } = await axios.post('http://localhost:3001/auth/login', payload);
+                const { data } = await axiosBase.post(`auth/login`, payload);
             
                 localStorage.setItem('auth', JSON.stringify(data));
             

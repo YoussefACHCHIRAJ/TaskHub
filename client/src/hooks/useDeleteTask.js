@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation } from "react-query";
 import useAuthContext from "./useAuthContext";
+import { axiosBase } from ".";
 
 const useDeleteTask = ({ onSuccess }) => {
   const { auth } = useAuthContext()
@@ -8,7 +9,7 @@ const useDeleteTask = ({ onSuccess }) => {
   const query = useMutation(
     async (taskSelected) => {
       try {
-        const { data } = await axios.delete(`http://localhost:3001/tasks/delete/${taskSelected}`, {
+        const { data } = await axiosBase.delete(`tasks/delete/${taskSelected}`, {
           headers: { 'authorization': `bearer ${auth.token}` }
         });
         onSuccess();

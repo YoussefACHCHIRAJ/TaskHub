@@ -1,3 +1,4 @@
+import axios from "axios";
 import useAuthContext from "./useAuthContext";
 import useDeleteMember from "./useDeleteMember";
 import useDeleteTask from "./useDeleteTask";
@@ -15,7 +16,10 @@ import useUpdateTask from "./useUpdateTask";
 import useGetNotifications from "./useGetNotifications";
 import useUpdateNotification from "./useUpdateNotification";
 
+const axiosBase = axios.create({ baseURL: process.env.REACT_APP_SERVER_URI });
+
 export {
+    axiosBase,
     useAuthContext,
     useDeleteMember,
     useDeleteTask,
