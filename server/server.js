@@ -4,7 +4,7 @@ const { app, realTimeFunctionality } = require("./app");
 
 dotenv.config();
 const DB_URI = process.env.DB_URI;
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 
 /* data base connect */
 mongoose.connect(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
